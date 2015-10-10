@@ -1,0 +1,28 @@
+{
+  "name": "gert",
+  "version": "0.0.0",
+  "description": "A graph library intended to delight you, Gert, and Arthur.",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devinivy/gert"
+  },
+  "keywords": [
+    "graph",
+    "traversal",
+    "cayley",
+    "sabidussi"
+  ],
+  "author": "Devin Ivy <devin@bigroomstudios.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devinivy/gert/issues"
+  },
+  "homepage": "https://github.com/devinivy/gert"
+}
