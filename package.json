@@ -24,5 +24,12 @@
   "bugs": {
     "url": "https://github.com/devinivy/gert/issues"
   },
-  "homepage": "https://github.com/devinivy/gert"
+  "homepage": "https://github.com/devinivy/gert",
+  "dependencies": {
+    "hoek": "^2.16.x"
+  },
+  "devDependencies": {
+    "code": "1.x.x",
+    "lab": "6.x.x"
+  }
 }
