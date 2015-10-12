@@ -23,10 +23,13 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.removeEdges(labels)`
 #### `graph.distance(u, v)`
 #### `graph.snapshot()`
-#### `graph.equals(graph)`
+#### `graph.equals(anotherGraph)`
 #### `graph.subgraph(subset)`
-#### `graph.complement(subgraph)`
+#### `graph.complement(subGraph)`
 #### `graph.transpose()`
+#### `graph.union(anotherGraph)`
+#### `graph.intersection(anotherGraph)`
+#### `graph.join(anotherGraph)`
 #### `graph.traverse(starting)`
 
 ### `Traversal`
