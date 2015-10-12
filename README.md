@@ -25,7 +25,7 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.snapshot()`
 #### `graph.equals(anotherGraph)`
 #### `graph.subgraph(subset)`
-#### `graph.complement(subGraph)`
+#### `graph.complement(subgraph)`
 #### `graph.transpose()`
 #### `graph.union(anotherGraph)`
 #### `graph.intersection(anotherGraph)`
