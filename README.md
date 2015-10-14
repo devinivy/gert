@@ -12,25 +12,26 @@ A graph library intended to delight you, Gert, and Arthur.
 
 #### `new Graph(definition)`
 
-#### `graph.getVertex(u)`
-#### `graph.getVertices(labels)`
-#### `graph.addVertex(u)`
-#### `graph.removeVertex(u)`
-#### `graph.removeVertices(labels)`
+#### `graph.getVertex(v)`
+#### `graph.getVertices(vertexIdsOrLabel)`
+#### `graph.addVertex(v, info)`
+#### `graph.removeVertex(v)`
+#### `graph.removeVertices(vertexIdsOrLabel)`
 #### `graph.getEdge(u, v)`
-#### `graph.addEdge(u, v, labels)`
+#### `graph.getEdges(edgePairsOrLabel)`
+#### `graph.addEdge(u, v, info)`
 #### `graph.removeEdge(u, v)`
-#### `graph.removeEdges(labels)`
+#### `graph.removeEdges(edgePairsOrLabel)`
 #### `graph.distance(u, v)`
 #### `graph.snapshot()`
 #### `graph.equals(anotherGraph)`
 #### `graph.subgraph(subset)`
-#### `graph.complement(subgraph)`
+#### `graph.complement()`
 #### `graph.transpose()`
 #### `graph.union(anotherGraph)`
 #### `graph.intersection(anotherGraph)`
 #### `graph.join(anotherGraph)`
-#### `graph.traverse(starting)`
+#### `graph.traverse(startingVertex)`
 
 ### `Traversal`
 
