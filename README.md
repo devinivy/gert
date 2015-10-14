@@ -8,10 +8,11 @@ A graph library intended to delight you, Gert, and Arthur.
 
 ## API
 
-### `Graph`
+### `Gert.Graph`
 
 #### `new Graph(definition)`
 
+#### `graph.digraph`
 #### `graph.getVertex(v)`
 #### `graph.getVertices(vertexIdsOrLabel)`
 #### `graph.addVertex(v, info)`
@@ -32,14 +33,18 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.intersection(anotherGraph)`
 #### `graph.join(anotherGraph)`
 #### `graph.traverse(startingVertex)`
+#### `graph.adjacencyMatrix()`
 
-### `Traversal`
+### `Gert.Traversal`
 
 #### `new Traversal(graph)`
 
-#### `traversal.hop(u)`
-#### `traversal.walk(u)`
+#### `traversal.graph`
+#### `traversal.sequence`
+#### `traversal.distance`
+#### `traversal.hop(v)`
+#### `traversal.walk(v)`
 #### `traversal.currentVertex()`
-#### `traversal.visits(u)`
+#### `traversal.visits(v)`
 #### `traversal.subgraph()`
 #### `traversal.play(graph)`
