@@ -168,7 +168,7 @@ describe('Gert', function () {
             });
 
             var actualEdges = graph.getEdges();
-            var expectedEgdes = [
+            var expectedEdges = [
                 { pair: ['a', 'b'], labels: [], weight: 1 },
                 { pair: ['a', 'c'], labels: [], weight: 1 },
                 { pair: ['b', 'c'], labels: [], weight: 1 },
@@ -177,7 +177,220 @@ describe('Gert', function () {
                 { pair: ['c', 'd'], labels: [], weight: 1 }
             ];
 
-            expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEgdes))
+            expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEdges));
+
+            done();
+        });
+
+        it('definition can create edges with weights and labels.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: {},
+                    b: {},
+                    c: {},
+                    d: {}
+                },
+                edges: [
+                    ['a', 'b'],
+                    { pair: ['b', 'c' ], labels: 'strong', weight: 2 },
+                    { pair: ['c', 'd' ], labels: ['weak', 'strange'], weight: -1 }
+                ]
+            });
+
+            expect(graph.digraph).to.equal(true);
+
+            var vertices = graph.getVertices();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: ['b'],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 1
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: ['c'],
+                    from: ['a'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 1
+                },
+                c: {
+                    id: 'c',
+                    labels: [],
+                    to: ['d'],
+                    from: ['b'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 1
+                },
+                d: {
+                    id: 'd',
+                    labels: [],
+                    to: [],
+                    from: ['c'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 0
+                }
+            });
+
+            var actualEdges = graph.getEdges();
+            var expectedEdges = [
+                { pair: ['a', 'b'], labels: [], weight: 1 },
+                { pair: ['b', 'c'], labels: ['strong'], weight: 2 },
+                { pair: ['c', 'd'], labels: ['weak', 'strange'], weight: -1 }
+            ];
+
+            expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEdges));
+
+            done();
+        });
+
+        it('definition will create new vertices from edge specification.', function (done) {
+
+            var graph = new Graph({
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c']
+                ]
+            });
+
+            expect(graph.digraph).to.equal(true);
+
+            var vertices = graph.getVertices();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: ['b'],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 1
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: ['c'],
+                    from: ['a'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 1
+                },
+                c: {
+                    id: 'c',
+                    labels: [],
+                    to: [],
+                    from: ['b'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 0
+                }
+            });
+
+            var actualEdges = graph.getEdges();
+            var expectedEdges = [
+                { pair: ['a', 'b'], labels: [], weight: 1 },
+                { pair: ['b', 'c'], labels: [], weight: 1 },
+            ];
+
+            expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEdges));
+
+            done();
+        });
+
+        it('definition can create an undirected graph.', function (done) {
+
+            var graph = new Graph({
+                digraph: false,
+                vertices: {
+                    a: {
+                        to: 'b'
+                    },
+                    b: {
+                        from: 'd'
+                    },
+                    c: {
+                        neighbors: ['a', 'b', 'e']
+                    }
+                },
+                edges: [
+                    ['d', 'c']
+                ]
+            });
+
+            expect(graph.digraph).to.equal(false);
+
+            var vertices = graph.getVertices();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: ['b', 'c'],
+                    from: ['b', 'c'],
+                    neighbors: ['b', 'c'],
+                    data: undefined,
+                    degree: 2
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: ['a', 'd', 'c'],
+                    from: ['a', 'd', 'c'],
+                    neighbors: ['a', 'd', 'c'],
+                    data: undefined,
+                    degree: 3
+                },
+                d: {
+                    id: 'd',
+                    labels: [],
+                    to: ['b', 'c'],
+                    from: ['b', 'c'],
+                    neighbors: ['b', 'c'],
+                    data: undefined,
+                    degree: 2
+                },
+                c: {
+                    id: 'c',
+                    labels: [],
+                    to: ['a', 'b', 'e', 'd'],
+                    from: ['a', 'b', 'e', 'd'],
+                    neighbors: ['a', 'b', 'e', 'd'],
+                    data: undefined,
+                    degree: 4
+                },
+                e: {
+                    id: 'e',
+                    labels: [],
+                    to: ['c'],
+                    from: ['c'],
+                    neighbors: ['c'],
+                    data: undefined,
+                    degree: 1
+                }
+            });
+
+            var actualEdges = graph.getEdges();
+
+            var expectedEdges = [
+                { pair: ['a', 'b'], labels: [], weight: 1 },
+                { pair: ['a', 'c'], labels: [], weight: 1 },
+                { pair: ['b', 'd'], labels: [], weight: 1 },
+                { pair: ['b', 'c'], labels: [], weight: 1 },
+                { pair: ['c', 'e'], labels: [], weight: 1 },
+                { pair: ['d', 'c'], labels: [], weight: 1 }
+            ];
+
+            expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEdges));
 
             done();
         });
