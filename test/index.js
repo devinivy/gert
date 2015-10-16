@@ -395,6 +395,347 @@ describe('Gert', function () {
             done();
         });
 
+        it('definition can create vertices in array format.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a', 'b'],
+                edges: [['a', 'b']]
+            });
+
+            expect(graph.digraph).to.equal(true);
+
+            var vertices = graph.getVertices();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: ['b'],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 1
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: [],
+                    from: ['a'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 0
+                }
+            });
+
+            var actualEdges = graph.getEdges();
+
+            var expectedEdges = [
+                { pair: ['a', 'b'], labels: [], weight: 1 }
+            ];
+
+            expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEdges));
+
+            done();
+        });
+
+        it('definition can create vertex edges in array format.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b']
+                }
+            });
+
+            expect(graph.digraph).to.equal(true);
+
+            var vertices = graph.getVertices();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: ['b'],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 1
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: [],
+                    from: ['a'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 0
+                }
+            });
+
+            var actualEdges = graph.getEdges();
+
+            var expectedEdges = [
+                { pair: ['a', 'b'], labels: [], weight: 1 }
+            ];
+
+            expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEdges));
+
+            done();
+        });
+
+        it('getVertex(v) returns empty and non-empty vertex information.', function (done) {
+
+            var data = {
+                b: {},
+                c: []
+            };
+
+            var digraph = new Graph({
+                vertices: {
+                    a: {
+                        labels: 'eh'
+                    },
+                    b: {
+                        data: data.b
+                    },
+                    c: {
+                        labels: 'sea',
+                        data: data.c
+                    }
+                }
+            });
+
+            var nondigraph = new Graph({
+                digraph: false,
+                vertices: {
+                    a: {}
+                }
+            });
+
+            var divertex = {
+                a: digraph.getVertex('a'),
+                b: digraph.getVertex('b'),
+                c: digraph.getVertex('c'),
+                d: digraph.getVertex('d'),
+            };
+
+            expect(divertex.a).to.deep.equal({
+                id: 'a',
+                labels: ['eh'],
+                to: [],
+                from: [],
+                data: undefined,
+                indegree: 0,
+                outdegree: 0
+            });
+
+            expect(divertex.b).to.deep.equal({
+                id: 'b',
+                labels: [],
+                to: [],
+                from: [],
+                data: data.b,
+                indegree: 0,
+                outdegree: 0
+            });
+
+            expect(divertex.b.data).to.equal(data.b);
+
+            expect(divertex.c).to.deep.equal({
+                id: 'c',
+                labels: ['sea'],
+                to: [],
+                from: [],
+                data: data.c,
+                indegree: 0,
+                outdegree: 0
+            });
+
+            expect(divertex.c.data).to.equal(data.c);
+
+            expect(divertex.d).to.equal(null);
+
+            var nondivertex = {
+                a: nondigraph.getVertex('a')
+            };
+
+            expect(nondivertex.a).to.deep.equal({
+                id: 'a',
+                labels: [],
+                to: [],
+                from: [],
+                neighbors: [],
+                data: undefined,
+                degree: 0
+            });
+
+            done();
+        });
+
+        it('getVertices() returns all vertices.', function (done) {
+
+            var data = {
+                b: {},
+                c: []
+            };
+
+            var graph = new Graph({
+                vertices: {
+                    a: {
+                        labels: 'eh'
+                    },
+                    b: {
+                        data: data.b
+                    },
+                    c: {
+                        labels: 'sea',
+                        data: data.c
+                    }
+                }
+            });
+
+            var vertices = graph.getVertices();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: ['eh'],
+                    to: [],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 0
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: [],
+                    from: [],
+                    data: data.b,
+                    indegree: 0,
+                    outdegree: 0
+                },
+                c: {
+                    id: 'c',
+                    labels: ['sea'],
+                    to: [],
+                    from: [],
+                    data: data.c,
+                    indegree: 0,
+                    outdegree: 0
+                }
+            });
+
+            done();
+        });
+
+        it('getVertices(array) returns specified vertices.', function (done) {
+
+            var data = {
+                b: {},
+                c: []
+            };
+
+            var graph = new Graph({
+                vertices: {
+                    a: {
+                        labels: 'eh'
+                    },
+                    b: {
+                        data: data.b
+                    },
+                    c: {
+                        labels: 'sea',
+                        data: data.c
+                    }
+                }
+            });
+
+            var vertices = graph.getVertices(['a', 'c', 'not']);
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: ['eh'],
+                    to: [],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 0
+                },
+                c: {
+                    id: 'c',
+                    labels: ['sea'],
+                    to: [],
+                    from: [],
+                    data: data.c,
+                    indegree: 0,
+                    outdegree: 0
+                }
+            });
+
+            done();
+        });
+
+        it('getVertices(label) returns vertices by label.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: {
+                        labels: ['ab', 'vowel']
+                    },
+                    b: {
+                        labels: ['ab', 'consonant']
+                    },
+                    c: {
+                        labels: ['sea', 'consonant']
+                    }
+                }
+            });
+
+            var expected = {
+                a: {
+                    id: 'a',
+                    labels: ['ab', 'vowel'],
+                    to: [],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 0
+                },
+                b: {
+                    id: 'b',
+                    labels: ['ab', 'consonant'],
+                    to: [],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 0
+                },
+                c: {
+                    id: 'c',
+                    labels: ['sea', 'consonant'],
+                    to: [],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 0
+                }
+            };
+
+            var consonants = graph.getVertices('consonant');
+            var vowels = graph.getVertices('vowel');
+            var abs = graph.getVertices('ab');
+            var seas = graph.getVertices('sea');
+            var none = graph.getVertices('none');
+
+            expect(consonants).to.deep.equal({ b: expected.b, c: expected.c });
+            expect(vowels).to.deep.equal({ a: expected.a });
+            expect(abs).to.deep.equal({ a: expected.a, b: expected.b });
+            expect(seas).to.deep.equal({ c: expected.c });
+            expect(none).to.deep.equal({});
+
+            done();
+        });
         /*it('builds a graph from a graph definition.', function (done) {
 
             var definition = {
