@@ -17,48 +17,48 @@ var expect = Code.expect;
 
 describe('Gert', function () {
 
-    describe('Graph', function () {
+    var edgeFormat = function (edges) {
 
-        var edgeFormat = function (edges) {
+        var obj = {};
+        var edge;
+        for (var i = 0; i < edges.length; i++) {
+            edge = edges[i];
+            obj[edge.pair[0]] = obj[edge.pair[0]] || {};
+            obj[edge.pair[0]][edge.pair[1]] = edge;
+        }
+
+        return obj;
+    };
+
+    var vertexFormat = function (vertices) {
+
+        var objify = function(arr) {
 
             var obj = {};
-            var edge;
-            for (var i = 0; i < edges.length; i++) {
-                edge = edges[i];
-                obj[edge.pair[0]] = obj[edge.pair[0]] || {};
-                obj[edge.pair[0]][edge.pair[1]] = edge;
+            for (var i = 0; i < arr.length; i++) {
+                obj[arr[i]] = true;
             }
 
             return obj;
         };
 
-        var vertexFormat = function (vertices) {
-
-            var objify = function(arr) {
-
-                var obj = {};
-                for (var i = 0; i < arr.length; i++) {
-                    obj[arr[i]] = true;
-                }
-
-                return obj;
-            };
-
-            var vertex;
-            var vertexList = Object.keys(vertices);
-            for (var i = 0; i < vertexList.length; i++) {
-                vertex = vertices[vertexList[i]];
-                vertex.to = objify(vertex.to);
-                vertex.from = objify(vertex.from);
-                if (vertex.neighbors) {
-                    vertex.neighbors = objify(vertex.neighbors);
-                }
+        var vertex;
+        var vertexList = Object.keys(vertices);
+        for (var i = 0; i < vertexList.length; i++) {
+            vertex = vertices[vertexList[i]];
+            vertex.to = objify(vertex.to);
+            vertex.from = objify(vertex.from);
+            if (vertex.neighbors) {
+                vertex.neighbors = objify(vertex.neighbors);
             }
+        }
 
-            return vertices;
-        };
+        return vertices;
+    };
 
-        it('no definition defaults to an empty directed graph.', function (done) {
+    describe('Graph', function () {
+
+        it('with no definition defaults to an empty directed graph.', function (done) {
 
             var graph = new Graph();
 
@@ -1637,10 +1637,280 @@ describe('Gert', function () {
 
     describe('Traversal', function () {
 
-        /*it('', function (done) {
+        it('creates a traversal for a particular graph.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a']
+            });
+
+            var traversal = new Traversal(graph);
+            expect(traversal.graph).to.equal(graph);
+            expect(traversal.currentVertex()).to.equal(null);
+            expect(traversal.sequence).to.deep.equal([]);
+            expect(traversal.distance).to.equal(0);
 
             done();
-        });*/
+        });
+
+        it('hop(v) visits vertices without following any edges.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a', 'b', 'c']
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a');
+
+            expect(traversal.currentVertex().id).to.equal('a');
+            expect(traversal.sequence).to.deep.equal(['a']);
+            expect(traversal.distance).to.equal(0);
+
+            traversal.hop('b').hop('c').hop('a').hop('b');
+
+            expect(traversal.currentVertex().id).to.equal('b');
+            expect(traversal.sequence).to.deep.equal(['a', 'b', 'c', 'a', 'b']);
+            expect(traversal.distance).to.equal(0);
+
+            done();
+        });
+
+        it('walk(v) walks along an edge to the specified vertex from the current vertex.', function (done) {
+
+            var graph = new Graph({
+                edges: [
+                    { pair: ['a', 'b'], weight: 1 },
+                    { pair: ['b', 'c'], weight: 3 },
+                    { pair: ['c', 'a'], weight: 5 }
+                ]
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a').walk('b');
+
+            expect(traversal.currentVertex().id).to.equal('b');
+            expect(traversal.sequence).to.deep.equal(['a', 'b']);
+            expect(traversal.distance).to.equal(1);
+
+            traversal.walk('c');
+
+            expect(traversal.currentVertex().id).to.equal('c');
+            expect(traversal.sequence).to.deep.equal(['a', 'b', 'c']);
+            expect(traversal.distance).to.equal(4);
+
+            traversal.walk('a');
+
+            expect(traversal.currentVertex().id).to.equal('a');
+            expect(traversal.sequence).to.deep.equal(['a', 'b', 'c', 'a']);
+            expect(traversal.distance).to.equal(9);
+
+            done();
+        });
+
+        it('currentVertex() returns the current position of the traversal, or null otherwise.', function (done) {
+
+            var data = {};
+
+            var graph = new Graph({
+                vertices: {
+                    a: { to: ['b'], labels: ['ay', 'eh'], data: data }
+                }
+            });
+
+            var traversal = new Traversal(graph);
+
+            expect(traversal.currentVertex()).to.equal(null);
+
+            traversal.hop('a');
+
+            var current = traversal.currentVertex();
+
+            expect(current).to.deep.equal({
+                id: 'a',
+                labels: ['ay', 'eh'],
+                to: ['b'],
+                from: [],
+                data: data,
+                indegree: 0,
+                outdegree: 1
+            });
+
+            expect(current.data).to.equal(data);
+
+            done();
+        });
+
+        it('vists(v) returns the number of times the specified vertex has been visited.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b', 'c'],
+                    b: ['c'],
+                    c: ['a'],
+                    d: []
+                }
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a')
+            .walk('b').hop('a')
+            .walk('c').walk('a')
+            .walk('b').hop('a')
+            .hop('c').walk('a')
+            .walk('c');
+
+            expect(traversal.visits('a')).to.equal(5);
+            expect(traversal.visits('b')).to.equal(2);
+            expect(traversal.visits('c')).to.equal(3);
+            expect(traversal.visits('d')).to.equal(0);
+
+            done();
+        });
+
+        it('subgraph() returns a directed subgraph of visited vertices and walked edges.', function (done) {
+
+            var graph = new Graph({
+                digraph: true,
+                vertices: {
+                    a: ['b', 'c'],
+                    b: ['c'],
+                    c: ['a', 'b'],
+                    d: [],
+                    e: []
+                }
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a').walk('b')
+            .walk('c').walk('b')
+            .walk('c').walk('b')
+            .hop('e');
+
+            var subgraph = traversal.subgraph();
+
+            var vertexList = Object.keys(subgraph.getVertices());
+            var edges = subgraph.getEdges();
+
+            expect(vertexList).to.only.include(['a', 'b', 'c', 'e']);
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 1, labels: [] },
+                { pair: ['b', 'c'], weight: 1, labels: [] },
+                { pair: ['c', 'b'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('subgraph() returns an undirected subgraph of visited vertices and walked edges.', function (done) {
+
+            var graph = new Graph({
+                digraph: false,
+                vertices: {
+                    a: ['b', 'c'],
+                    b: [],
+                    c: ['b', 'e'],
+                    d: [],
+                    e: []
+                }
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a').walk('b')
+            .walk('c').walk('b')
+            .walk('c').hop('e');
+
+            var subgraph = traversal.subgraph();
+
+            var vertexList = Object.keys(subgraph.getVertices());
+            var edges = subgraph.getEdges();
+
+            expect(vertexList).to.only.include(['a', 'b', 'c', 'e']);
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['b', 'a'], weight: 1, labels: [] },
+                { pair: ['b', 'c'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('play() without arguments returns a new traversal played over its own graph.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b', 'c'],
+                    b: ['c'],
+                    c: ['a', 'b'],
+                    d: [],
+                    e: []
+                }
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a').walk('b')
+            .walk('c').walk('b')
+            .walk('c').walk('b')
+            .hop('e');
+
+            var replayed = traversal.play();
+
+            expect(replayed).to.be.instanceof(Traversal);
+            expect(traversal).to.not.equal(replayed);
+            expect(traversal.graph).to.equal(replayed.graph);
+            expect(traversal.sequence).to.deep.equal(replayed.sequence);
+            expect(traversal.distance).to.equal(replayed.distance);
+            expect(traversal.currentVertex().id).to.equal(replayed.currentVertex().id);
+
+            done();
+        });
+
+        it('play(graph) returns a new traversal played over the specified graph.', function (done) {
+
+            var graphOne = new Graph({
+                vertices: ['a', 'b', 'c', 'd', 'e'],
+                edges: [
+                    { pair: ['a', 'b'], weight: 1 },
+                    { pair: ['a', 'c'], weight: 1 },
+                    { pair: ['b', 'c'], weight: 1 },
+                    { pair: ['c', 'a'], weight: 1 },
+                    { pair: ['c', 'b'], weight: 1 },
+                ]
+            });
+
+            var graphTwo = new Graph({
+                vertices: ['a', 'b', 'c', 'd', 'e'],
+                edges: [
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['a', 'c'], weight: 2 },
+                    { pair: ['b', 'c'], weight: 2 },
+                    { pair: ['c', 'a'], weight: 2 },
+                    { pair: ['c', 'b'], weight: 2 },
+                ]
+            });
+
+            var traversal = new Traversal(graphOne);
+
+            traversal.hop('a').walk('b')
+            .walk('c').walk('b')
+            .walk('c').walk('b')
+            .hop('e');
+
+            var replayed = traversal.play(graphTwo);
+
+            expect(replayed).to.be.instanceof(Traversal);
+            expect(traversal).to.not.equal(replayed);
+            expect(replayed.graph).to.equal(graphTwo);
+            expect(traversal.sequence).to.deep.equal(replayed.sequence);
+            expect(2 * traversal.distance).to.equal(replayed.distance);
+            expect(traversal.currentVertex().id).to.equal(replayed.currentVertex().id);
+
+            done();
+        });
+
     });
 
 });
