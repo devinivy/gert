@@ -736,84 +736,332 @@ describe('Gert', function () {
 
             done();
         });
-        /*it('builds a graph from a graph definition.', function (done) {
 
-            var definition = {
-                digraph: true,
-                vertices: {
-                    a: {
-                        labels: 'odd',
-                        to: 'b'
-                    },
-                    c: {
-                        labels: ['odd', 'sea'],
-                        to: ['b', 'd'],
-                        from: 'e'
-                    },
-                    b: {
-                        labels: ['even', 'bee'],
-                        from: ['d', 'e']
-                    }
-                },
-                edges: [
-                    ['d', 'a'],
-                    { pair: ['b', 'a'], weight: 2, labels: 'even-odd' },
-                    { pair: ['a', 'c'], labels: ['odd-odd'] }
-                ]
+        it('addVertex(v, info) adds a vertex with or without info.', function (done) {
+
+            var data = {
+                b: {}
             };
 
-            var graph = new Graph(definition);
+            var graph = new Graph();
 
-            expect(graph._vertices).to.deep.equal({
-                a: {
-                    id: 'a',
-                    to: { b: true, c: true },
-                    from: { b: true, d: true },
-                    labels: ['odd'],
-                    outdegree: 2,
-                    indegree: 2,
-                    data: undefined
-                },
-                b: {
-                    id: 'b',
-                    to: { a: true },
-                    from: { a: true, c: true, d: true, e: true },
-                    labels: ['even', 'bee'],
-                    outdegree: 1,
-                    indegree: 4,
-                    data: undefined
-                },
-                c: {
-                    id: 'c',
-                    to: { b: true, d: true },
-                    from: { a: true, e: true },
-                    labels: ['odd', 'sea'],
-                    outdegree: 2,
-                    indegree: 2,
-                    data: undefined
-                },
-                d: {
-                    id: 'd',
-                    to: { a: true, b: true },
-                    from: { c: true },
-                    labels: [],
-                    outdegree: 2,
-                    indegree: 1,
-                    data: undefined
-                },
-                e: {
-                    id: 'e',
-                    to: { c: true, b: true },
-                    from: {},
-                    labels: [],
-                    outdegree: 2,
-                    indegree: 0,
-                    data: undefined
-                }
-            });*
+            graph.addVertex('a');
+            graph.addVertex('b', {
+                labels: ['bee'],
+                data: data.b
+            });
+
+            var a = graph.getVertex('a');
+
+            expect(a).to.deep.equal({
+                id: 'a',
+                labels: [],
+                to: [],
+                from: [],
+                data: undefined,
+                indegree: 0,
+                outdegree: 0
+            });
+
+            var b = graph.getVertex('b');
+
+            expect(b).to.deep.equal({
+                id: 'b',
+                labels: ['bee'],
+                to: [],
+                from: [],
+                data: data.b,
+                indegree: 0,
+                outdegree: 0
+            });
+
+            expect(b.data).to.equal(data.b);
 
             done();
-        });*/
+        });
+
+        it('removeVertex(v) removes vertex and related edges from digraph.', function (done) {
+
+            var graph = new Graph({
+                digraph: true,
+                vertices: {
+                    a: ['b'],
+                    b: ['a', 'c']
+                }
+            });
+
+            graph.removeVertex('a');
+
+            var vertices = graph.getVertices();
+            expect(Object.keys(vertices)).to.only.include(['b', 'c']);
+
+            expect(vertices.b.from).to.deep.equal([]);
+            expect(vertices.b.to).to.deep.equal(['c']);
+            expect(vertices.c.from).to.deep.equal(['b']);
+            expect(vertices.c.to).to.deep.equal([]);
+
+            var edges = graph.getEdges();
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['b', 'c'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('removeVertex(v) removes vertex and related edges from non-digraph.', function (done) {
+
+            var graph = new Graph({
+                digraph: false,
+                vertices: {
+                    a: ['b'],
+                    b: ['c']
+                }
+            });
+
+            graph.removeVertex('a');
+
+            var vertices = graph.getVertices();
+            expect(Object.keys(vertices)).to.only.include(['b', 'c']);
+
+            expect(vertices.b.from).to.deep.equal(['c']);
+            expect(vertices.b.to).to.deep.equal(['c']);
+            expect(vertices.c.from).to.deep.equal(['b']);
+            expect(vertices.c.to).to.deep.equal(['b']);
+
+            var edges = graph.getEdges();
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['b', 'c'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('removeVertex(v) removes vertex from label lookup.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: {
+                        labels: ['eh']
+                    }
+                }
+            });
+
+            graph.removeVertex('a');
+
+            expect(graph.getVertices('eh')).to.deep.equal({});
+
+            done();
+        });
+
+        it('removeVertices() without arguments removes all vertices.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b', 'c'],
+                    b: ['c']
+                }
+            });
+
+            graph.removeVertices();
+
+            expect(graph.getVertices()).to.deep.equal({});
+            expect(graph.getEdges()).to.deep.equal([]);
+
+            done();
+        });
+
+        it('removeVertices(array) removes specified vertices.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b', 'c'],
+                    b: ['c']
+                }
+            });
+
+            graph.removeVertices(['a', 'b']);
+
+            var vertices = graph.getVertices();
+
+            expect(Object.keys(vertices)).to.deep.equal(['c']);
+            expect(graph.getEdges()).to.deep.equal([]);
+
+            done();
+        });
+
+        it('removeVertices(label) removes vertices by label.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: {
+                        labels: 'ab',
+                        to: ['b', 'c']
+                    },
+                    b: {
+                        labels: 'ab',
+                        to: ['c']
+                    }
+                }
+            });
+
+            graph.removeVertices('none');
+
+            var vertices = graph.getVertices();
+
+            expect(Object.keys(vertices)).to.only.contain(['a', 'b', 'c']);
+
+            graph.removeVertices('ab');
+
+            vertices = graph.getVertices();
+
+            expect(Object.keys(vertices)).to.only.contain(['c']);
+            expect(graph.getEdges()).to.deep.equal([]);
+
+            done();
+        });
+
+        it('getEdge(u, v) and getEdge([u, v]) returns the specified edge or null if no match.', function (done) {
+
+            var graph = new Graph({
+                edges: [
+                    { pair: ['a', 'b'], weight: 2, labels: ['ab'] }
+                ]
+            });
+
+            var edgeByList = graph.getEdge('a', 'b');
+            var edgeByArr = graph.getEdge(['a', 'b']);
+            var expected = { pair: ['a', 'b'], weight: 2, labels: ['ab'] };
+
+            expect(edgeByList).to.deep.equal(expected);
+            expect(edgeByArr).to.deep.equal(expected);
+
+            var nonEdgeOne = graph.getEdge('a', 'c');
+            var nonEdgeTwo = graph.getEdge('b', 'a');
+
+            expect(nonEdgeOne).to.equal(null);
+            expect(nonEdgeTwo).to.equal(null);
+
+            done();
+        });
+
+        it('getEdge() is orderless in non-digraphs.', function (done) {
+
+            var graph = new Graph({
+                digraph: false,
+                edges: [
+                    { pair: ['a', 'b'], weight: 2, labels: ['ab'] }
+                ]
+            });
+
+            var edgeAB = graph.getEdge('a', 'b');
+            var edgeBA = graph.getEdge('b', 'a');
+            var expectedAB = { pair: ['a', 'b'], weight: 2, labels: ['ab'] };
+            var expectedBA = { pair: ['b', 'a'], weight: 2, labels: ['ab'] };
+
+            expect(edgeAB).to.deep.equal(expectedAB);
+            expect(edgeBA).to.deep.equal(expectedBA);
+
+            done();
+        });
+
+        it('getEdges() without arguments returns all edges.', function (done) {
+
+            var graph = new Graph({
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c'],
+                    ['c', 'a'],
+                    ['b', 'a']
+                ]
+            });
+
+            var edges = graph.getEdges();
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 1, labels: [] },
+                { pair: ['b', 'c'], weight: 1, labels: [] },
+                { pair: ['c', 'a'], weight: 1, labels: [] },
+                { pair: ['b', 'a'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('getEdges(array) returns specified edges, ignores non-edges.', function (done) {
+
+            var graph = new Graph({
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c'],
+                    ['c', 'a'],
+                    ['b', 'a']
+                ]
+            });
+
+            var edges = graph.getEdges([['a', 'b'], ['c', 'a'], ['c', 'b']]);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 1, labels: [] },
+                { pair: ['c', 'a'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('getEdges(label) returns edges by label.', function (done) {
+
+            var graph = new Graph({
+                edges: [
+                    { pair: ['a', 'b'], labels: ['tall'] },
+                    { pair: ['b', 'c'], labels: ['tall', 'cold'] },
+                    { pair: ['c', 'a'], labels: ['short'] },
+                    { pair: ['b', 'a'], labels: ['short'] }
+                ]
+            });
+
+            var tall = graph.getEdges('tall');
+            var cold = graph.getEdges('cold');
+            var short = graph.getEdges('short');
+
+            expect(edgeFormat(tall)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 1, labels: ['tall'] },
+                { pair: ['b', 'c'], weight: 1, labels: ['tall', 'cold'] }
+            ]));
+
+            expect(edgeFormat(cold)).to.deep.equal(edgeFormat([
+                { pair: ['b', 'c'], weight: 1, labels: ['tall', 'cold'] }
+            ]));
+
+            expect(edgeFormat(short)).to.deep.equal(edgeFormat([
+                { pair: ['c', 'a'], weight: 1, labels: ['short'] },
+                { pair: ['b', 'a'], weight: 1, labels: ['short'] }
+            ]));
+
+            done();
+        });
+
+        it('getEdges() is orderless in non-digraphs.', function (done) {
+
+            var graph = new Graph({
+                digraph: false,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c']
+                ]
+            });
+
+            var edges = graph.getEdges();
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 1, labels: [] },
+                { pair: ['b', 'c'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
     });
 
     describe('Traversal', function () {
