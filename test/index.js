@@ -32,7 +32,7 @@ describe('Gert', function () {
 
     var vertexFormat = function (vertices) {
 
-        var objify = function(arr) {
+        var objify = function (arr) {
 
             var obj = {};
             for (var i = 0; i < arr.length; i++) {
@@ -219,8 +219,8 @@ describe('Gert', function () {
                 },
                 edges: [
                     ['a', 'b'],
-                    { pair: ['b', 'c' ], labels: 'strong', weight: 2 },
-                    { pair: ['c', 'd' ], labels: ['weak', 'strange'], weight: -1 }
+                    { pair: ['b', 'c'], labels: 'strong', weight: 2 },
+                    { pair: ['c', 'd'], labels: ['weak', 'strange'], weight: -1 }
                 ]
             });
 
@@ -325,7 +325,7 @@ describe('Gert', function () {
             var actualEdges = graph.getEdges();
             var expectedEdges = [
                 { pair: ['a', 'b'], labels: [], weight: 1 },
-                { pair: ['b', 'c'], labels: [], weight: 1 },
+                { pair: ['b', 'c'], labels: [], weight: 1 }
             ];
 
             expect(edgeFormat(actualEdges)).to.deep.equal(edgeFormat(expectedEdges));
@@ -541,7 +541,7 @@ describe('Gert', function () {
                 a: digraph.getVertex('a'),
                 b: digraph.getVertex('b'),
                 c: digraph.getVertex('c'),
-                d: digraph.getVertex('d'),
+                d: digraph.getVertex('d')
             };
 
             expect(divertex.a).to.deep.equal({
@@ -1137,10 +1137,10 @@ describe('Gert', function () {
             var edges = graph.getEdges();
 
             expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
-                { pair: ['a', 'b'], weight: 2, labels: ['ab'] },
+                { pair: ['a', 'b'], weight: 2, labels: ['ab'] }
             ]));
 
-            var edgeBA = graph.getEdge('b', 'a')
+            var edgeBA = graph.getEdge('b', 'a');
 
             expect(edgeFormat([edgeBA])).to.deep.equal(edgeFormat([
                 { pair: ['b', 'a'], weight: 2, labels: ['ab'] }
@@ -1621,7 +1621,7 @@ describe('Gert', function () {
                 digraph: false,
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
-                    { pair: ['b', 'c'], weight: -1 },
+                    { pair: ['b', 'c'], weight: -1 }
                 ]
             });
 
@@ -1877,7 +1877,7 @@ describe('Gert', function () {
                     { pair: ['a', 'c'], weight: 1 },
                     { pair: ['b', 'c'], weight: 1 },
                     { pair: ['c', 'a'], weight: 1 },
-                    { pair: ['c', 'b'], weight: 1 },
+                    { pair: ['c', 'b'], weight: 1 }
                 ]
             });
 
@@ -1888,7 +1888,7 @@ describe('Gert', function () {
                     { pair: ['a', 'c'], weight: 2 },
                     { pair: ['b', 'c'], weight: 2 },
                     { pair: ['c', 'a'], weight: 2 },
-                    { pair: ['c', 'b'], weight: 2 },
+                    { pair: ['c', 'b'], weight: 2 }
                 ]
             });
 
