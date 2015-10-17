@@ -33,7 +33,7 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.intersection(anotherGraph)`
 #### `graph.join(anotherGraph)`
 #### `graph.traverse(startingVertex)`
-#### `graph.adjacencyMatrix()`
+#### `graph.adjacencyMatrix(weighted)`
 
 ### `Gert.Traversal`
 

@@ -874,6 +874,10 @@ describe('Gert', function () {
                 }
             });
 
+            // Spoof a bad edge unlabeling to show it's a no-op
+            graph._unlabelVertex('a', 'non');
+            expect(graph.getVertices('eh')).to.only.include('a');
+
             graph.removeVertex('a');
 
             expect(graph.getVertices('eh')).to.deep.equal({});
@@ -1050,6 +1054,7 @@ describe('Gert', function () {
             var tall = graph.getEdges('tall');
             var cold = graph.getEdges('cold');
             var short = graph.getEdges('short');
+            var non = graph.getEdges('non');
 
             expect(edgeFormat(tall)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: ['tall'] },
@@ -1064,6 +1069,8 @@ describe('Gert', function () {
                 { pair: ['c', 'a'], weight: 1, labels: ['short'] },
                 { pair: ['b', 'a'], weight: 1, labels: ['short'] }
             ]));
+
+            expect(non).to.deep.equal([]);
 
             done();
         });
@@ -1533,6 +1540,39 @@ describe('Gert', function () {
             expect(origVertices.b.data).to.equal(snapVertices.b.data);
 
             expect(edgeFormat(origEdges)).to.deep.equal(edgeFormat(snapEdges));
+
+            done();
+        });
+
+        it('traverse() creates a new traversal for the graph.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a']
+            });
+
+            var traversal = graph.traverse();
+
+            expect(traversal).to.be.instanceof(Traversal);
+            expect(traversal.graph).to.equal(graph);
+            expect(traversal.currentVertex()).to.equal(null);
+            expect(traversal.sequence).to.deep.equal([]);
+            expect(traversal.distance).to.equal(0);
+
+            done();
+        });
+
+        it('traverse(starting) creates a new traversal for the graph at a particular vertex.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a']
+            });
+
+            var traversal = graph.traverse('a');
+
+            expect(traversal).to.be.instanceof(Traversal);
+            expect(traversal.graph).to.equal(graph);
+            expect(traversal.currentVertex().id).to.equal('a');
+            expect(traversal.distance).to.equal(0);
 
             done();
         });
