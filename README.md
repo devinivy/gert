@@ -2,7 +2,7 @@
 
 A graph library intended to delight you, Gert, and Arthur.
 
-[![Build Status](https://travis-ci.org/devinivy/gert.svg?branch=master)](https://travis-ci.org/devinivy/gert)
+[![Build Status](https://travis-ci.org/devinivy/gert.svg?branch=master)](https://travis-ci.org/devinivy/gert) [![Coverage Status](https://coveralls.io/repos/devinivy/gert/badge.svg?branch=master&service=github)](https://coveralls.io/github/devinivy/gert?branch=master)
 
 ## Usage
 
