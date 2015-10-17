@@ -1062,6 +1062,44 @@ describe('Gert', function () {
             done();
         });
 
+        it('adjacencyMatrix() returns a proper adjacency matrix and vertex list for digraphs.', function (done) {
+
+            var graph = new Graph({
+                digraph: true,
+                vertices: ['d'],
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c'],
+                    ['c', 'a']
+                ]
+            });
+
+            var adjacency = graph.adjacencyMatrix();
+
+            expect(adjacency.vertices).to.deep.equal(['d', 'a', 'b', 'c']);
+            expect(adjacency.matrix).to.deep.equal([[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [0, 1, 0, 0]]);
+
+            done();
+        });
+
+        it('adjacencyMatrix() returns a proper adjacency matrix and vertex list for non-digraphs.', function (done) {
+
+            var graph = new Graph({
+                digraph: false,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c']
+                ]
+            });
+
+            var adjacency = graph.adjacencyMatrix();
+
+            expect(adjacency.vertices).to.deep.equal(['a', 'b', 'c']);
+            expect(adjacency.matrix).to.deep.equal([[0, 1, 0], [1, 0, 1], [0, 1, 0]]);
+
+            done();
+        });
+
     });
 
     describe('Traversal', function () {
