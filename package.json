@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "lab -a code -t 100 -L",
+    "coveralls": "lab -a code -r lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "code": "1.x.x",
+    "coveralls": "2.x.x",
     "lab": "6.x.x"
   }
 }
