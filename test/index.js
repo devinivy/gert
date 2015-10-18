@@ -1329,6 +1329,125 @@ describe('Gert', function () {
             done();
         });
 
+        it('equals(graph) says digraphs and non-digraphs are not equal.', function (done) {
+
+            var graph = new Graph({ digraph: false });
+            var digraph = new Graph({ digraph: true });
+
+            expect(graph.equals(digraph)).to.equal(false);
+            expect(digraph.equals(graph)).to.equal(false);
+
+            done();
+        });
+
+        it('equals(graph) compares two digraphs, optionally with edge weights.', function (done) {
+
+            var graphAOne = new Graph({
+                digraph: true,
+                edges: [
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['b', 'a'], weight: 1 },
+                    { pair: ['b', 'c'], weight: -1 }
+                ]
+            });
+
+            var graphATwo = new Graph({
+                digraph: true,
+                edges: [
+                    { pair: ['b', 'c'], weight: -1 },
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['b', 'a'], weight: 1 }
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: true,
+                edges: [
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['b', 'a'], weight: 10 },
+                    { pair: ['b', 'c'], weight: -1 }
+                ]
+            });
+
+            var graphC = new Graph({
+                digraph: true,
+                vertices: ['d'],
+                edges: [
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['b', 'a'], weight: 1 },
+                    { pair: ['b', 'c'], weight: -1 }
+                ]
+            });
+
+            expect(graphAOne.equals(graphATwo)).to.equal(true);
+            expect(graphATwo.equals(graphAOne)).to.equal(true);
+            expect(graphAOne.equals(graphATwo, true)).to.equal(true);
+            expect(graphATwo.equals(graphAOne, true)).to.equal(true);
+
+            // Ignoring weights
+            expect(graphAOne.equals(graphB)).to.equal(true);
+            // Bad vertex set
+            expect(graphAOne.equals(graphC)).to.equal(false);
+            // Bad weight
+            expect(graphAOne.equals(graphB, true)).to.equal(false);
+            // Still bad vertex set
+            expect(graphAOne.equals(graphC, true)).to.equal(false);
+
+            done();
+        });
+
+        it('equals(graph) compares two non-digraphs, optionally with edge weights.', function (done) {
+
+            var graphAOne = new Graph({
+                digraph: false,
+                edges: [
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['b', 'c'], weight: -1 }
+                ]
+            });
+
+            var graphATwo = new Graph({
+                digraph: false,
+                edges: [
+                    { pair: ['b', 'c'], weight: -1 },
+                    { pair: ['a', 'b'], weight: 2 }
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: false,
+                edges: [
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['b', 'c'], weight: -10 }
+                ]
+            });
+
+            var graphC = new Graph({
+                digraph: false,
+                vertices: ['d'],
+                edges: [
+                    { pair: ['a', 'b'], weight: 2 },
+                    { pair: ['b', 'c'], weight: -1 }
+                ]
+            });
+
+            expect(graphAOne.equals(graphATwo)).to.equal(true);
+            expect(graphATwo.equals(graphAOne)).to.equal(true);
+            expect(graphAOne.equals(graphATwo, true)).to.equal(true);
+            expect(graphATwo.equals(graphAOne, true)).to.equal(true);
+
+            // Ignoring weights
+            expect(graphAOne.equals(graphB)).to.equal(true);
+            // Bad vertex set
+            expect(graphAOne.equals(graphC)).to.equal(false);
+            // Bad weight
+            expect(graphAOne.equals(graphB, true)).to.equal(false);
+            // Still bad vertex set
+            expect(graphAOne.equals(graphC, true)).to.equal(false);
+
+            done();
+        });
+
         it('subgraph(subset) returns a new graph, a subset of the original.', function (done) {
 
             var data = {

@@ -25,7 +25,7 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.removeEdges(edgePairsOrLabel)`
 #### `graph.distance(u, v)`
 #### `graph.snapshot()`
-#### `graph.equals(anotherGraph)`
+#### `graph.equals(anotherGraph, matchWeights)`
 #### `graph.subgraph(subset)`
 #### `graph.complement()`
 #### `graph.transpose()`
