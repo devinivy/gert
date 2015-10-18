@@ -1660,6 +1660,62 @@ describe('Gert', function () {
             done();
         });
 
+        it('transpose() constructs a digraph transpose.', function (done) {
+
+            var data = {
+                a: {},
+                b: []
+            };
+
+            var graph = new Graph({
+                digraph: true,
+                vertices: {
+                    a: {
+                        labels: ['eh', 'ay'],
+                        data: data.a
+                    },
+                    b: {
+                        labels: ['bee'],
+                        data: data.b
+                    },
+                    c: {},
+                    d: {}
+                },
+                edges: [
+                    { pair: ['a', 'a'], weight: 1, labels: [] },
+                    { pair: ['a', 'b'], weight: 2, labels: ['hasA', 'first'] },
+                    { pair: ['b', 'c'], weight: -1, labels: [] },
+                    { pair: ['c', 'a'], weight: 1, labels: ['hasA'] }
+                ]
+            });
+
+            var transpose = graph.transpose();
+
+            var origVertices = graph.getVertices();
+            var vertices = transpose.getVertices();
+            var edges = transpose.getEdges();
+
+            expect(Object.keys(vertices)).to.only.include(['a', 'b', 'c', 'd']);
+
+            expect(vertices.a.labels).to.deep.equal(origVertices.a.labels);
+            expect(vertices.a.data).to.equal(origVertices.a.data);
+            expect(vertices.b.labels).to.deep.equal(origVertices.b.labels);
+            expect(vertices.b.data).to.equal(origVertices.b.data);
+            expect(vertices.c.labels).to.deep.equal(origVertices.c.labels);
+            expect(vertices.c.data).to.equal(origVertices.c.data);
+            expect(vertices.d.labels).to.deep.equal(origVertices.d.labels);
+            expect(vertices.d.data).to.equal(origVertices.d.data);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'a'], weight: 1, labels: [] },
+                { pair: ['b', 'a'], weight: 2, labels: ['hasA', 'first'] },
+                { pair: ['c', 'b'], weight: -1, labels: [] },
+                { pair: ['a', 'c'], weight: 1, labels: ['hasA'] }
+            ]));
+
+            done();
+        });
+
         it('traverse() creates a new traversal for the graph.', function (done) {
 
             var graph = new Graph({
