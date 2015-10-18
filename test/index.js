@@ -806,6 +806,29 @@ describe('Gert', function () {
             done();
         });
 
+        it('addVertex(v, info) de-dupes labels.', function (done) {
+
+            var graph = new Graph();
+
+            graph.addVertex('a', {
+                labels: ['bee', 'bee']
+            });
+
+            var a = graph.getVertex('a');
+
+            expect(a).to.deep.equal({
+                id: 'a',
+                labels: ['bee'],
+                to: [],
+                from: [],
+                data: undefined,
+                indegree: 0,
+                outdegree: 0
+            });
+
+            done();
+        });
+
         it('removeVertex(v) removes vertex and related edges from digraph.', function (done) {
 
             var graph = new Graph({
