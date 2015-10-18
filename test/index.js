@@ -1633,6 +1633,104 @@ describe('Gert', function () {
             done();
         });
 
+        it('can handle self-loops in non-digraphs.', function (done) {
+
+            var graph = new Graph({
+                digraph: false,
+                vertices: {
+                    a: ['a']
+                }
+            });
+
+            var vertices = graph.getVertices();
+            var edges = graph.getEdges();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: ['a'],
+                    from: ['a'],
+                    neighbors: [],
+                    data: undefined,
+                    degree: 2
+                }
+            });
+
+            expect(edges).to.deep.equal([
+                { pair: ['a', 'a'], weight: 1, labels:[] }
+            ]);
+
+            graph.removeEdge('a', 'a');
+
+            vertices = graph.getVertices();
+            edges = graph.getEdges();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: [],
+                    from: [],
+                    neighbors: [],
+                    data: undefined,
+                    degree: 0
+                }
+            });
+            expect(edges).to.deep.equal([]);
+
+            done();
+        });
+
+        it('can handle self-loops in digraphs.', function (done) {
+
+            var graph = new Graph({
+                digraph: true,
+                vertices: {
+                    a: ['a']
+                }
+            });
+
+            var vertices = graph.getVertices();
+            var edges = graph.getEdges();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: ['a'],
+                    from: ['a'],
+                    data: undefined,
+                    indegree: 1,
+                    outdegree: 1
+                }
+            });
+
+            expect(edges).to.deep.equal([
+                { pair: ['a', 'a'], weight: 1, labels:[] }
+            ]);
+
+            graph.removeEdge('a', 'a');
+
+            vertices = graph.getVertices();
+            edges = graph.getEdges();
+
+            expect(vertices).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: [],
+                    to: [],
+                    from: [],
+                    data: undefined,
+                    indegree: 0,
+                    outdegree: 0
+                }
+            });
+            expect(edges).to.deep.equal([]);
+
+            done();
+        });
+
     });
 
     describe('Traversal', function () {
