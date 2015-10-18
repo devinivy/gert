@@ -1544,6 +1544,122 @@ describe('Gert', function () {
             done();
         });
 
+        it('complement() constructs a digraph complement, preserving self-loops.', function (done) {
+
+            var data = {
+                a: {},
+                b: []
+            };
+
+            var graph = new Graph({
+                digraph: true,
+                vertices: {
+                    a: { to: ['a', 'b', 'c'], labels: ['ay', 'eh'], data: data.a },
+                    b: { to: ['c'], labels: ['bee'] , data: data.b },
+                    c: ['a', 'b'],
+                    d: [],
+                    e: []
+                }
+            });
+
+            var complement = graph.complement();
+
+            expect(complement).to.be.instanceof(Graph);
+            expect(complement.digraph).to.equal(true);
+
+            var origVertices = graph.getVertices();
+            var vertices = complement.getVertices();
+            var edges = complement.getEdges();
+
+            expect(Object.keys(vertices)).to.only.include(['a', 'b', 'c', 'd', 'e']);
+
+            expect(vertices.a.labels).to.deep.equal(origVertices.a.labels);
+            expect(vertices.a.data).to.equal(origVertices.a.data);
+            expect(vertices.b.labels).to.deep.equal(origVertices.b.labels);
+            expect(vertices.b.data).to.equal(origVertices.b.data);
+            expect(vertices.c.labels).to.deep.equal(origVertices.c.labels);
+            expect(vertices.c.data).to.equal(origVertices.c.data);
+            expect(vertices.d.labels).to.deep.equal(origVertices.d.labels);
+            expect(vertices.d.data).to.equal(origVertices.d.data);
+            expect(vertices.e.labels).to.deep.equal(origVertices.e.labels);
+            expect(vertices.e.data).to.equal(origVertices.e.data);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'a'], weight: 1, labels: [] },
+                { pair: ['a', 'd'], weight: 1, labels: [] },
+                { pair: ['a', 'e'], weight: 1, labels: [] },
+                { pair: ['b', 'a'], weight: 1, labels: [] },
+                { pair: ['b', 'd'], weight: 1, labels: [] },
+                { pair: ['b', 'e'], weight: 1, labels: [] },
+                { pair: ['c', 'd'], weight: 1, labels: [] },
+                { pair: ['c', 'e'], weight: 1, labels: [] },
+                { pair: ['d', 'a'], weight: 1, labels: [] },
+                { pair: ['d', 'b'], weight: 1, labels: [] },
+                { pair: ['d', 'c'], weight: 1, labels: [] },
+                { pair: ['d', 'e'], weight: 1, labels: [] },
+                { pair: ['e', 'a'], weight: 1, labels: [] },
+                { pair: ['e', 'b'], weight: 1, labels: [] },
+                { pair: ['e', 'c'], weight: 1, labels: [] },
+                { pair: ['e', 'd'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('complement() constructs a non-digraph complement, preserving self-loops.', function (done) {
+
+            var data = {
+                a: {},
+                b: []
+            };
+
+            var graph = new Graph({
+                digraph: false,
+                vertices: {
+                    a: { to: ['a', 'b', 'c'], labels: ['ay', 'eh'], data: data.a },
+                    b: { to: ['c'], labels: ['bee'] , data: data.b },
+                    c: [],
+                    d: [],
+                    e: []
+                }
+            });
+
+            var complement = graph.complement();
+
+            expect(complement).to.be.instanceof(Graph);
+            expect(complement.digraph).to.equal(false);
+
+            var origVertices = graph.getVertices();
+            var vertices = complement.getVertices();
+            var edges = complement.getEdges();
+
+            expect(Object.keys(vertices)).to.only.include(['a', 'b', 'c', 'd', 'e']);
+
+            expect(vertices.a.labels).to.deep.equal(origVertices.a.labels);
+            expect(vertices.a.data).to.equal(origVertices.a.data);
+            expect(vertices.b.labels).to.deep.equal(origVertices.b.labels);
+            expect(vertices.b.data).to.equal(origVertices.b.data);
+            expect(vertices.c.labels).to.deep.equal(origVertices.c.labels);
+            expect(vertices.c.data).to.equal(origVertices.c.data);
+            expect(vertices.d.labels).to.deep.equal(origVertices.d.labels);
+            expect(vertices.d.data).to.equal(origVertices.d.data);
+            expect(vertices.e.labels).to.deep.equal(origVertices.e.labels);
+            expect(vertices.e.data).to.equal(origVertices.e.data);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'a'], labels: [], weight: 1 },
+                { pair: ['a', 'd'], labels: [], weight: 1 },
+                { pair: ['a', 'e'], labels: [], weight: 1 },
+                { pair: ['d', 'b'], labels: [], weight: 1 },
+                { pair: ['d', 'c'], labels: [], weight: 1 },
+                { pair: ['d', 'e'], labels: [], weight: 1 },
+                { pair: ['e', 'b'], labels: [], weight: 1 },
+                { pair: ['e', 'c'], labels: [], weight: 1 }
+            ]));
+
+            done();
+        });
+
         it('traverse() creates a new traversal for the graph.', function (done) {
 
             var graph = new Graph({
