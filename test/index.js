@@ -1198,6 +1198,23 @@ describe('Gert', function () {
             done();
         });
 
+        it('addEdge() de-dupes labels.', function (done) {
+
+            var graph = new Graph({ vertices: ['a', 'b'] });
+
+            graph.addEdge('a', 'b', { labels: ['dupe', 'dupe'] });
+
+            var edge = graph.getEdge('a', 'b');
+
+            expect(edge).to.deep.equal({
+                pair: ['a', 'b'],
+                weight: 1,
+                labels: ['dupe']
+            });
+
+            done();
+        });
+
         it('removeEdge(a, b) removes an edge from a digraph.', function (done) {
 
             var graph = new Graph({
@@ -1853,6 +1870,219 @@ describe('Gert', function () {
                 { pair: ['b', 'a'], weight: 2, labels: ['hasA', 'first'] },
                 { pair: ['c', 'b'], weight: -1, labels: [] },
                 { pair: ['a', 'c'], weight: 1, labels: ['hasA'] }
+            ]));
+
+            done();
+        });
+
+        it('union(graph) constructs a digraph union.', function (done) {
+
+            var graphA = new Graph({
+                digraph: true,
+                vertices: {
+                    a: {
+                        labels: ['ay'],
+                        data: { A: true }
+                    },
+                    b: {
+                        data: ['A']
+                    },
+                    d: {
+                        data: 0
+                    }
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: 2, labels: ['ab1'] },
+                    ['b', 'd'],
+                    ['a', 'a']
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: true,
+                vertices: {
+                    a: {
+                        labels: ['eh'],
+                        data: { B: true }
+                    },
+                    b: {
+                        data: ['B']
+                    },
+                    c: {
+                        data: 1
+                    }
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: 3, labels: ['ab2'] },
+                    ['b', 'a']
+                ]
+            });
+
+            var unionA = graphA.union(graphB);
+            var unionB = graphB.union(graphA);
+
+            var verticesA = unionA.getVertices();
+            var edgesA = unionA.getEdges();
+            var edgesB = unionB.getEdges();
+
+            expect(unionA.equals(unionB)).to.equal(true);
+
+            expect(verticesA).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: ['eh', 'ay'],
+                    to: ['b', 'a'],
+                    from: ['a', 'b'],
+                    data: { A: true, B: true },
+                    indegree: 2,
+                    outdegree: 2
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: ['a', 'd'],
+                    from: ['a'],
+                    data: ['B', 'A'],
+                    indegree: 1,
+                    outdegree: 2
+                },
+                c: {
+                    id: 'c',
+                    labels: [],
+                    to: [],
+                    from: [],
+                    data: 1,
+                    indegree: 0,
+                    outdegree: 0
+                },
+                d: {
+                    id: 'd',
+                    labels: [],
+                    to: [],
+                    from: ['b'],
+                    data: 0,
+                    indegree: 1,
+                    outdegree: 0
+                }
+            });
+
+            expect(edgeFormat(edgesA)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], labels: ['ab2', 'ab1'], weight: 2 },
+                { pair: ['b', 'a'], labels: [], weight: 1 },
+                { pair: ['b', 'd'], labels: [], weight: 1 },
+                { pair: ['a', 'a'], labels: [], weight: 1 }
+            ]));
+
+            expect(edgeFormat(edgesB)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], labels: ['ab1', 'ab2'], weight: 3 },
+                { pair: ['b', 'a'], labels: [], weight: 1 },
+                { pair: ['b', 'd'], labels: [], weight: 1 },
+                { pair: ['a', 'a'], labels: [], weight: 1 }
+            ]));
+
+            done();
+        });
+
+        it('union(graph) constructs a non-digraph union.', function (done) {
+
+            var graphA = new Graph({
+                digraph: false,
+                vertices: {
+                    a: {
+                        labels: ['ay'],
+                        data: { A: true }
+                    },
+                    b: {
+                        data: ['A']
+                    },
+                    d: {
+                        data: 0
+                    }
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: 2, labels: ['ab1'] },
+                    ['b', 'd'],
+                    ['a', 'a']
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: false,
+                vertices: {
+                    a: {
+                        labels: ['eh'],
+                        data: { B: true }
+                    },
+                    b: {
+                        data: ['B']
+                    },
+                    c: {
+                        data: 1
+                    }
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: 3, labels: ['ab2'] }
+                ]
+            });
+
+            var unionA = graphA.union(graphB);
+            var unionB = graphB.union(graphA);
+
+            var verticesA = unionA.getVertices();
+            var edgesA = unionA.getEdges();
+            var edgesB = unionB.getEdges();
+
+            expect(unionA.equals(unionB)).to.equal(true);
+
+            expect(verticesA).to.deep.equal({
+                a: {
+                    id: 'a',
+                    labels: ['eh', 'ay'],
+                    to: ['b', 'a'],
+                    from: ['b', 'a'],
+                    data: { B: true, A: true },
+                    neighbors: ['b'],
+                    degree: 3
+                },
+                b: {
+                    id: 'b',
+                    labels: [],
+                    to: ['a', 'd'],
+                    from: ['a', 'd'],
+                    data: ['B', 'A'],
+                    neighbors: ['a', 'd'],
+                    degree: 2
+                },
+                c: {
+                    id: 'c',
+                    labels: [],
+                    to: [],
+                    from: [],
+                    data: 1,
+                    neighbors: [],
+                    degree: 0
+                },
+                d: {
+                    id: 'd',
+                    labels: [],
+                    to: ['b'],
+                    from: ['b'],
+                    data: 0,
+                    neighbors: ['b'],
+                    degree: 1
+                }
+            });
+
+            expect(edgeFormat(edgesA)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], labels: ['ab2', 'ab1'], weight: 2 },
+                { pair: ['b', 'd'], labels: [], weight: 1 },
+                { pair: ['a', 'a'], labels: [], weight: 1 }
+            ]));
+
+            expect(edgeFormat(edgesB)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], labels: ['ab1', 'ab2'], weight: 3 },
+                { pair: ['b', 'd'], labels: [], weight: 1 },
+                { pair: ['a', 'a'], labels: [], weight: 1 }
             ]));
 
             done();
