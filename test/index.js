@@ -2256,6 +2256,174 @@ describe('Gert', function () {
             done();
         });
 
+        it('join(graph, weight, oneWay) joins two digraphs.', function (done) {
+
+            var data = {
+                a: {},
+                b: []
+            };
+
+            var graphA = new Graph({
+                digraph: true,
+                vertices: {
+                    a: {
+                        labels: ['ay', 'eh'],
+                        data: data.a
+                    }
+                },
+                edges: [
+                    { pair: ['a', 'c'], weight: -1, labels: ['ac'] }
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: true,
+                vertices: {
+                    b: {
+                        labels: ['bee'],
+                        data: data.b
+                    }
+                },
+                edges: [
+                    { pair: ['b', 'd'], weight: 10, labels: ['bd'] }
+                ]
+            });
+
+            var joinPlain = graphA.join(graphB);
+            var joinZero = graphA.join(graphB, 0);
+            var joinWeight = graphA.join(graphB, 2);
+            var joinOneWay = graphA.join(graphB, 1, true);
+
+            var plainVertices = joinPlain.getVertices();
+            var plainEdges = joinPlain.getEdges();
+
+            expect(Object.keys(plainVertices)).to.only.include(['a', 'b', 'c', 'd']);
+            expect(plainVertices.a.labels).to.only.include(['ay', 'eh']);
+            expect(plainVertices.a.data).to.equal(data.a);
+            expect(plainVertices.b.labels).to.only.include(['bee']);
+            expect(plainVertices.b.data).to.equal(data.b);
+            expect(plainVertices.c.labels).to.deep.equal([]);
+            expect(plainVertices.c.data).to.be.undefined();
+            expect(plainVertices.d.labels).to.deep.equal([]);
+            expect(plainVertices.d.data).to.be.undefined();
+
+            expect(edgeFormat(plainEdges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'c'], weight: -1, labels: ['ac'] },
+                { pair: ['b', 'd'], weight: 10, labels: ['bd'] },
+                { pair: ['a', 'b'], weight: 1, labels: ['join-edge'] },
+                { pair: ['a', 'd'], weight: 1, labels: ['join-edge'] },
+                { pair: ['c', 'b'], weight: 1, labels: ['join-edge'] },
+                { pair: ['c', 'd'], weight: 1, labels: ['join-edge'] },
+                { pair: ['b', 'a'], weight: 1, labels: ['join-edge'] },
+                { pair: ['b', 'c'], weight: 1, labels: ['join-edge'] },
+                { pair: ['d', 'a'], weight: 1, labels: ['join-edge'] },
+                { pair: ['d', 'c'], weight: 1, labels: ['join-edge'] }
+            ]));
+
+            var zeroEdges = joinZero.getEdges();
+
+            expect(edgeFormat(zeroEdges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'c'], weight: -1, labels: ['ac'] },
+                { pair: ['b', 'd'], weight: 10, labels: ['bd'] },
+                { pair: ['a', 'b'], weight: 0, labels: ['join-edge'] },
+                { pair: ['a', 'd'], weight: 0, labels: ['join-edge'] },
+                { pair: ['c', 'b'], weight: 0, labels: ['join-edge'] },
+                { pair: ['c', 'd'], weight: 0, labels: ['join-edge'] },
+                { pair: ['b', 'a'], weight: 0, labels: ['join-edge'] },
+                { pair: ['b', 'c'], weight: 0, labels: ['join-edge'] },
+                { pair: ['d', 'a'], weight: 0, labels: ['join-edge'] },
+                { pair: ['d', 'c'], weight: 0, labels: ['join-edge'] }
+            ]));
+
+            var weightEdges = joinWeight.getEdges();
+
+            expect(edgeFormat(weightEdges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'c'], weight: -1, labels: ['ac'] },
+                { pair: ['b', 'd'], weight: 10, labels: ['bd'] },
+                { pair: ['a', 'b'], weight: 2, labels: ['join-edge'] },
+                { pair: ['a', 'd'], weight: 2, labels: ['join-edge'] },
+                { pair: ['c', 'b'], weight: 2, labels: ['join-edge'] },
+                { pair: ['c', 'd'], weight: 2, labels: ['join-edge'] },
+                { pair: ['b', 'a'], weight: 2, labels: ['join-edge'] },
+                { pair: ['b', 'c'], weight: 2, labels: ['join-edge'] },
+                { pair: ['d', 'a'], weight: 2, labels: ['join-edge'] },
+                { pair: ['d', 'c'], weight: 2, labels: ['join-edge'] }
+            ]));
+
+            var oneWayEdges = joinOneWay.getEdges();
+
+            expect(edgeFormat(oneWayEdges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'c'], weight: -1, labels: ['ac'] },
+                { pair: ['b', 'd'], weight: 10, labels: ['bd'] },
+                { pair: ['a', 'b'], weight: 1, labels: ['join-edge'] },
+                { pair: ['a', 'd'], weight: 1, labels: ['join-edge'] },
+                { pair: ['c', 'b'], weight: 1, labels: ['join-edge'] },
+                { pair: ['c', 'd'], weight: 1, labels: ['join-edge'] }
+            ]));
+
+            done();
+        });
+
+        it('join(graph, weight, oneWay) joins two non-digraphs.', function (done) {
+
+            var data = {
+                a: {},
+                b: []
+            };
+
+            var graphA = new Graph({
+                digraph: false,
+                vertices: {
+                    a: {
+                        labels: ['ay', 'eh'],
+                        data: data.a
+                    }
+                },
+                edges: [
+                    { pair: ['a', 'c'], weight: -1, labels: ['ac'] }
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: false,
+                vertices: {
+                    b: {
+                        labels: ['bee'],
+                        data: data.b
+                    }
+                },
+                edges: [
+                    { pair: ['b', 'd'], weight: 10, labels: ['bd'] }
+                ]
+            });
+
+            var join = graphA.join(graphB);
+
+            var vertices = join.getVertices();
+            var edges = join.getEdges();
+
+            expect(Object.keys(vertices)).to.only.include(['a', 'b', 'c', 'd']);
+            expect(vertices.a.labels).to.only.include(['ay', 'eh']);
+            expect(vertices.a.data).to.equal(data.a);
+            expect(vertices.b.labels).to.only.include(['bee']);
+            expect(vertices.b.data).to.equal(data.b);
+            expect(vertices.c.labels).to.deep.equal([]);
+            expect(vertices.c.data).to.be.undefined();
+            expect(vertices.d.labels).to.deep.equal([]);
+            expect(vertices.d.data).to.be.undefined();
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'c'], weight: -1, labels: ['ac'] },
+                { pair: ['b', 'd'], weight: 10, labels: ['bd'] },
+                { pair: ['b', 'a'], weight: 1, labels: ['join-edge'] },
+                { pair: ['d', 'a'], weight: 1, labels: ['join-edge'] },
+                { pair: ['b', 'c'], weight: 1, labels: ['join-edge'] },
+                { pair: ['d', 'c'], weight: 1, labels: ['join-edge'] }
+            ]));
+
+            done();
+        });
+
         it('traverse() creates a new traversal for the graph.', function (done) {
 
             var graph = new Graph({
