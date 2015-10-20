@@ -30,7 +30,7 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.transpose()`
 #### `graph.union(anotherGraph)`
 #### `graph.intersection(anotherGraph)`
-#### `graph.join(anotherGraph, bothWays)`
+#### `graph.join(anotherGraph, weight, oneWay)`
 #### `graph.traverse(startingVertex)`
 #### `graph.adjacencyMatrix(weighted)`
 
