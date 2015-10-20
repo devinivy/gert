@@ -23,7 +23,6 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.addEdge(u, v, info)`
 #### `graph.removeEdge(u, v)`
 #### `graph.removeEdges(edgePairsOrLabel)`
-#### `graph.distance(u, v)`
 #### `graph.snapshot()`
 #### `graph.equals(anotherGraph, matchWeights)`
 #### `graph.subgraph(subset)`
@@ -31,7 +30,7 @@ A graph library intended to delight you, Gert, and Arthur.
 #### `graph.transpose()`
 #### `graph.union(anotherGraph)`
 #### `graph.intersection(anotherGraph)`
-#### `graph.join(anotherGraph)`
+#### `graph.join(anotherGraph, bothWays)`
 #### `graph.traverse(startingVertex)`
 #### `graph.adjacencyMatrix(weighted)`
 

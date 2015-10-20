@@ -2088,6 +2088,174 @@ describe('Gert', function () {
             done();
         });
 
+        it('intersection(graph) constructs a digraph intersection.', function (done) {
+
+            var data = {
+                A: {
+                    a: { A: true }
+                },
+                B: {
+                    a: { B: true }
+                }
+            };
+
+            var graphA = new Graph({
+                digraph: true,
+                vertices: {
+                    a: {
+                        labels: ['ay', 'eh', 'ah'],
+                        data: data.A.a
+                    },
+                    b: {},
+                    c: {},
+                    d: {}
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: 2, labels: ['ab1', 'ab2'] },
+                    ['b', 'c'],
+                    ['c', 'a'],
+                    ['d', 'a']
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: true,
+                vertices: {
+                    a: {
+                        labels: ['ay', 'eh', 'meh'],
+                        data: data.B.a
+                    },
+                    b: {},
+                    c: {},
+                    e: {}
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: -1, labels: ['ab1', 'ab3'] },
+                    ['b', 'c'],
+                    ['a', 'c'],
+                    ['e', 'b']
+                ]
+            });
+
+            var intersectionA = graphA.intersection(graphB);
+            var intersectionB = graphB.intersection(graphA);
+
+            var verticesA = intersectionA.getVertices();
+            var verticesB = intersectionB.getVertices();
+            var edgesA = intersectionA.getEdges();
+            var edgesB = intersectionB.getEdges();
+
+            expect(intersectionA.digraph).to.equal(true);
+            expect(intersectionA.equals(intersectionB)).to.equal(true);
+            expect(Object.keys(verticesA)).to.only.include(['a', 'b', 'c']);
+            expect(verticesA.a.data).to.equal(data.A.a);
+            expect(verticesA.a.labels).to.only.include(['ay', 'eh']);
+            expect(verticesA.b.data).to.be.undefined();
+            expect(verticesA.b.labels).to.deep.equal([]);
+            expect(verticesA.c.data).to.be.undefined();
+            expect(verticesA.c.labels).to.deep.equal([]);
+
+            expect(verticesB.a.data).to.equal(data.B.a);
+            expect(verticesB.a.labels).to.only.include(['ay', 'eh']);
+
+            expect(edgeFormat(edgesA)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 2, labels: ['ab1'] },
+                { pair: ['b', 'c'], weight: 1, labels: [] }
+            ]));
+
+            expect(edgeFormat(edgesB)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: -1, labels: ['ab1'] },
+                { pair: ['b', 'c'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
+        it('intersection(graph) constructs a non-digraph union.', function (done) {
+
+            var data = {
+                A: {
+                    a: { A: true }
+                },
+                B: {
+                    a: { B: true }
+                }
+            };
+
+            var graphA = new Graph({
+                digraph: false,
+                vertices: {
+                    a: {
+                        labels: ['ay', 'eh', 'ah'],
+                        data: data.A.a
+                    },
+                    b: {},
+                    c: {},
+                    d: {}
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: 2, labels: ['ab1', 'ab2'] },
+                    ['b', 'c'],
+                    ['c', 'a'],
+                    ['d', 'a']
+                ]
+            });
+
+            var graphB = new Graph({
+                digraph: false,
+                vertices: {
+                    a: {
+                        labels: ['ay', 'eh', 'meh'],
+                        data: data.B.a
+                    },
+                    b: {},
+                    c: {},
+                    e: {}
+                },
+                edges: [
+                    { pair: ['a', 'b'], weight: -1, labels: ['ab1', 'ab3'] },
+                    ['b', 'c'],
+                    ['a', 'c'],
+                    ['e', 'b']
+                ]
+            });
+
+            var intersectionA = graphA.intersection(graphB);
+            var intersectionB = graphB.intersection(graphA);
+
+            var verticesA = intersectionA.getVertices();
+            var verticesB = intersectionB.getVertices();
+            var edgesA = intersectionA.getEdges();
+            var edgesB = intersectionB.getEdges();
+
+            expect(intersectionA.digraph).to.equal(false);
+            expect(intersectionA.equals(intersectionB)).to.equal(true);
+            expect(Object.keys(verticesA)).to.only.include(['a', 'b', 'c']);
+            expect(verticesA.a.data).to.equal(data.A.a);
+            expect(verticesA.a.labels).to.only.include(['ay', 'eh']);
+            expect(verticesA.b.data).to.be.undefined();
+            expect(verticesA.b.labels).to.deep.equal([]);
+            expect(verticesA.c.data).to.be.undefined();
+            expect(verticesA.c.labels).to.deep.equal([]);
+
+            expect(verticesB.a.data).to.equal(data.B.a);
+            expect(verticesB.a.labels).to.only.include(['ay', 'eh']);
+
+            expect(edgeFormat(edgesA)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 2, labels: ['ab1'] },
+                { pair: ['b', 'c'], weight: 1, labels: [] },
+                { pair: ['a', 'c'], weight: 1, labels: [] }
+            ]));
+
+            expect(edgeFormat(edgesB)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: -1, labels: ['ab1'] },
+                { pair: ['b', 'c'], weight: 1, labels: [] },
+                { pair: ['a', 'c'], weight: 1, labels: [] }
+            ]));
+
+            done();
+        });
+
         it('traverse() creates a new traversal for the graph.', function (done) {
 
             var graph = new Graph({
