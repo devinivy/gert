@@ -27,7 +27,8 @@
   },
   "homepage": "https://github.com/devinivy/gert",
   "dependencies": {
-    "hoek": "^2.16.x"
+    "hoek": "^2.16.3",
+    "joi": "^6.9.1"
   },
   "devDependencies": {
     "code": "1.x.x",
