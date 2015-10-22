@@ -508,6 +508,19 @@ describe('Gert', function () {
             done();
         });
 
+        it('vertexExists(v) indicates whether a vertex exists in a graph.', function (done) {
+
+            var graph = new Graph({ vertices: [1, 'a', 2.2] });
+
+            expect(graph.vertexExists(1)).to.equal(true);
+            expect(graph.vertexExists('a')).to.equal(true);
+            expect(graph.vertexExists(2.2)).to.equal(true);
+
+            expect(graph.vertexExists('non')).to.equal(false);
+
+            done();
+        });
+
         it('getVertex(v) returns empty and non-empty vertex information.', function (done) {
 
             var data = {
@@ -971,6 +984,42 @@ describe('Gert', function () {
 
             expect(Object.keys(vertices)).to.only.contain(['c']);
             expect(graph.getEdges()).to.deep.equal([]);
+
+            done();
+        });
+
+        it('edgeExists(u, v) and edgeExists([u, v]) indicate whether an edge exists in a graph.', function (done) {
+
+            var digraph = new Graph({
+                digraph: true,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'a'],
+                    ['b', 'c'],
+                    ['b', 'b']
+                ]
+            });
+
+            var nondigraph = new Graph({
+                digraph: false,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'b']
+                ]
+            });
+
+            expect(digraph.edgeExists('a', 'b')).to.equal(true);
+            expect(digraph.edgeExists('b', 'a')).to.equal(true);
+            expect(digraph.edgeExists('b', 'c')).to.equal(true);
+            expect(digraph.edgeExists('b', 'b')).to.equal(true);
+            expect(digraph.edgeExists('c', 'b')).to.equal(false);
+
+            expect(digraph.edgeExists(['a', 'b'])).to.equal(true);
+            expect(digraph.edgeExists(['c', 'b'])).to.equal(false);
+
+            expect(nondigraph.edgeExists('a', 'b')).to.equal(true);
+            expect(nondigraph.edgeExists('b', 'a')).to.equal(true);
+            expect(nondigraph.edgeExists('b', 'b')).to.equal(true);
 
             done();
         });

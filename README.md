@@ -44,6 +44,9 @@ var graph = new Graph({
 #### `graph.digraph`
 Indicates if the graph's edges are directed.  Should be considered read-only.
 
+#### `graph.vertexExists(v)`
+Returns `true` if a vertex with id `v` exists in the graph, and `false` otherwise.
+
 #### `graph.getVertex(v)`
 Returns vertex `v` in an object of the following format,
  - `id` - the vertex's id.
@@ -73,6 +76,9 @@ Removes vertex with id `v` from the graph, including any incident edges.
 
 #### `graph.removeVertices(vertexIdsOrLabel)`
 Removes a collection of vertices and their incident edges from the graph.  If `vertexIdsOrLabel` is an array of vertex ids, those vertices will be removed.  If `vertexIdsOrLabel` is a label, all vertices with that label will be removed.
+
+#### `graph.edgeExists(u, v)`
+Returns `true` if an edge from `u` to `v` exists in the graph, and `false` otherwise.  This method also accepts a single array argument containing the edge-pair (e.g. `[u, v]`).
 
 #### `graph.getEdge(u, v)`
 Returns the edge from vertex `u` to vertex `v` in an object of the following format,
