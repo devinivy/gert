@@ -59,7 +59,7 @@ Returns vertex `v` in an object of the following format,
  - `indegree` - the number of incoming edges to the vertex.  This vertex property only appears in directed graphs.
  - `degree` - the number of edges incident to the vertex, with self-loops counted twice.  This vertex property only appears in undirected graphs.
 
- If no such vertex is found, returns `null`.
+If no such vertex is found, returns `null`.
 
 #### `graph.getVertices(vertexIdsOrLabel)`
 Returns an object whose keys are vertex ids and whose values are vertices of the format specified in [`graph.getVertex()`](#graphgetvertexv).  If `vertexIdsOrLabel` is an array of vertex ids, the returned object will contain entries for every such vertex that is found in the graph.  If `vertexIdsOrLabel` is a label, the returned object will contain entries for all vertices that have that label.
