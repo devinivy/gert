@@ -32,6 +32,7 @@ Creates a new `Graph` object. Creates a null, directed graph when `definition` i
 
 Any vertex ids that are only specified only in `to`, `from`, `neighbors` fields, or an edge `pair` will cause those vertices to be created in the graph without any `labels` or `data`.  The same edge may not be specified in a graph definition twice.  For example, the following definition is invalid because the edge between `a` and `b` is specified twice,
 ```js
+// Invalid
 var graph = new Graph({
   vertices: {
     a: { to: ['b'] },
