@@ -143,15 +143,34 @@ Returns the graph's adjacency matrix as object of the format,
  - `matrix` - an array of arrays, each representing a row in the adjacency matrix.  The vertex-order of the rows and columns corresponds to the order of the returned `vertices` property.  When `weighted` is `true`, the non-zero entries in the adjacency matrix contain the corresponding edge weight rather than `1`.
 
 ### `Gert.Traversal`
+The `Gert.Traversal` object is the container for traversing the vertices and edges of a graph.  It records the traversal so that it can be replayed over another graph.  It also keeps some information about the trip, such as the total distance traveled.
 
 #### `new Traversal(graph)`
+Creates a new `Traversal` object.  The `graph` specified is the `Graph` that will be traversed.
 
 #### `traversal.graph`
+A reference the the `Graph` object being traversed.  The reference should not be reassigned, though the graph may be altered.
+
 #### `traversal.sequence`
+An array of visited vertex ids in the order that they were visited.  Should be considered read-only.
+
 #### `traversal.distance`
+The sum of the edge weights of the edges traversed using [`traversal.walk()`](#traversalwalkv).  Should be considered read-only.
+
 #### `traversal.hop(v)`
+Visits vertex with id `v` without traversing any edges.  Typically a new traversal begins by calling `traversal.hop()` to visit the first vertex.
+
 #### `traversal.walk(v)`
+Traverses the edge from the current vertex to vertex with id `v`, visiting `v`.
+
 #### `traversal.currentVertex()`
+Returns vertex info for the currently visited vertex.
+
 #### `traversal.visits(v)`
+Returns the number of times the traversal has visited the vertex with id `v`,
+
 #### `traversal.subgraph()`
-#### `traversal.play(graph)`
+Returns a `Graph` representing the subgraph of visited nodes and traversed edges.
+
+#### `traversal.play([graph])`
+Returns a new `Traversal` of the in-progress traversal played over `graph`.  It calls [`traversal.hop()`](#traversalhopv) and [`traversal.walk()`](#traversalwalkv) in the order they were called on `traversal`.  If `graph` isn't specified, the traversal will be replayed over [`traversal.graph`](#traversalgraph).
