@@ -142,7 +142,6 @@ Returns the graph's adjacency matrix as object of the format,
  - `vertices` - an array (ordering) of the vertex ids in `graph`.
  - `matrix` - an array of arrays, each representing a row in the adjacency matrix.  The vertex-order of the rows and columns corresponds to the order of the returned `vertices` property.  When `weighted` is `true`, the non-zero entries in the adjacency matrix contain the corresponding edge weight rather than `1`.
 
-
 ### `Gert.Traversal`
 
 #### `new Traversal(graph)`
