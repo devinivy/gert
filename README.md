@@ -21,7 +21,7 @@ Creates a new `Graph` object. Creates a null, directed graph when `definition` i
     - `data` - free-form data associated with this vertex.
     - `to` - a vertex id or array of vertex ids to which edges should be created from this vertex.
     - `from` - a vertex id or array of vertex ids from which edges should be created to this vertex.
-    - `neighbors` - a vertex id or array of vertex ids that should neighbor this vertex (it cannot include the id of this vertex).  Edges will be created between this vertex and the vertices specified.  Only for use in non-directed graphs (`definition.digraph = false`).
+    - `neighbors` - a vertex id or array of vertex ids that should neighbor this vertex (it cannot include the id of this vertex).  Edges will be created between this vertex and the vertices specified.  Only for use in undirected graphs (`definition.digraph = false`).
 
 - `edges` - an array of edge definitions, each edge specified in one of two formats,
   - an edge-pair formed as an array of two vertex ids or,
@@ -64,7 +64,7 @@ If no such vertex is found, returns `null`.
 #### `graph.getVertices(vertexIdsOrLabel)`
 Returns an object whose keys are vertex ids and whose values are vertices of the format specified in [`graph.getVertex()`](#graphgetvertexv).  If `vertexIdsOrLabel` is an array of vertex ids, the returned object will contain entries for every such vertex that is found in the graph.  If `vertexIdsOrLabel` is a label, the returned object will contain entries for all vertices that have that label.
 
-#### `graph.addVertex(v, info)`
+#### `graph.addVertex(v, [info])`
 Adds a new vertex into the graph where,
  - `v` - the vertex's id.
  - `info` - an object containing vertex info of the format,
@@ -104,16 +104,44 @@ Removes the edge that runs from vertex `u` to vertex `v`.  If the graph is undir
 #### `graph.removeEdges(edgePairsOrLabel)`
 Removes a collection of edges from the graph.  If `edgePairsOrLabel` is an array of edge-pairs (each edge-pair an array of two vertex ids), those edges will be removed.  If `edgePairsOrLabel` is a label, all edges with that label will be removed.
 
+#### `graph.equals(anotherGraph, [matchWeights])`
+Returns `true` when `anotherGraph` has the same graph structure and vertex ids, and returns `false` otherwise.  This ignores all labels and vertex data, but takes into account if the graphs are directed or not.  When `matchWeights` is `true`, it will require that edge weights also correspond for the two graphs to be considered equal.
+
+Note that this does not detect graph _isomorphism_ in general– matching vertex ids are used to compare the two graphs (e.g. if the two graphs are equal, vertex `u` in `graph` will necessarily map to vertex `u` in `anotherGraph`).
+
 #### `graph.snapshot()`
-#### `graph.equals(anotherGraph, matchWeights)`
+Returns a new `Graph` representing a perfect copy `graph`, maintaining labels, edge weights, and data associated with vertices.  Vertex data is copied directly rather than being cloned.
+
 #### `graph.subgraph(subset)`
+Returns a new `Graph` representing a subgraph of `graph`, where `subset` is an object of the format,
+ - `vertices` - an array of vertex ids to be included in the returned subgraph.
+ - `edges` - an array of edge-pairs (each edge-pair an array of two vertex ids) to be included in the returned subgraph.
+
+Labels, data, and edge weights are all preserved in the subgraph.  The subgraph is directed if and only if `graph` is directed.
+
 #### `graph.complement()`
+Returns a new `Graph` representing the graph complement of `graph`.  All edges are unlabeled with weight `1`, and all vertices maintain their original labels and data.  Self-loops are preserved.
+
 #### `graph.transpose()`
+Returns a new `Graph` representing the graph transpose of `graph`.  Only for use with directed graphs.  All vertices maintain their original labels and data, and each edge inherits the labels and weight of its respective transposed edge from `graph`.
+
 #### `graph.union(anotherGraph)`
+Returns a new `Graph` representing the graph union of `graph` and `anotherGraph`.  Vertices with the same id merge into a single vertex with combined labels and copied, deeply merged vertex data.  Similarly, common edges merge into a single edge with combined labels, but weight inherited from the edge in `graph`.  Otherwise, vertex and edge information is inherited from its origin graph.  Both graphs must mutually directed or undirected.
+
 #### `graph.intersection(anotherGraph)`
-#### `graph.join(anotherGraph, weight, oneWay)`
-#### `graph.traverse(startingVertex)`
-#### `graph.adjacencyMatrix(weighted)`
+Returns a new `Graph` representing the graph intersection of `graph` and `anotherGraph`.  Vertex data and edge weight are inherited from `graph`, while labels from the two graphs are intersected per vertex and per edge.  Both graphs must mutually directed or undirected.
+
+#### `graph.join(anotherGraph, [weight], [oneWay])`
+Returns a new `Graph` representing the graph join of `graph` and `anotherGraph`.  When `weight` is specified, the edges constructed between the two graphs will be given that weight; otherwise they are given the default weight of `1`.  When the graphs are directed and `oneWay` is `true`, the edges constructed between the two graphs will only go from vertices in `graph` to vertices in `anotherGraph` but not vice-versa; by default edges are constructed in both directions.  The two graphs must be mutually directed or undirected and not share any common vertex ids.
+
+#### `graph.traverse([startingVertex])`
+Returns a new `Traversal` of `graph`.  Optionally `startingVertex` may specify a vertex id within `graph` from which to begin the traversal.  In that case, `startingVertex` specifies the first visited vertex.
+
+#### `graph.adjacencyMatrix([weighted])`
+Returns the graph's adjacency matrix as object of the format,
+ - `vertices` - an array (ordering) of the vertex ids in `graph`.
+ - `matrix` - an array of arrays, each representing a row in the adjacency matrix.  The vertex-order of the rows and columns corresponds to the order of the returned `vertices` property.  When `weighted` is `true`, the non-zero entries in the adjacency matrix contain the corresponding edge weight rather than `1`.
+
 
 ### `Gert.Traversal`
 
