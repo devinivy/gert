@@ -5,6 +5,39 @@ A graph library intended to delight you, Gert, and Arthur.
 [![Build Status](https://travis-ci.org/devinivy/gert.svg?branch=master)](https://travis-ci.org/devinivy/gert) [![Coverage Status](https://coveralls.io/repos/devinivy/gert/badge.svg?branch=master&service=github)](https://coveralls.io/github/devinivy/gert?branch=master)
 
 ## Usage
+Gert is here to help you create and traverse graphs of all shapes and sizes: directed, undirected, simple, self-looping, weighted, negative-weighted, unweighted, labeled, null, large, small, and the like.  For now it just has to be finite, but we're working on that.
+
+Gert's interface aims to be understandable, lean, readable, and useful.  And the terminology used in Gert is consistent with "the literature", so if you're not familiar with what something means, combing the web or a relevant book should be sufficient to elucidate.
+
+If you dig into the API we think you'll find Gert to be quite the flexible little graph maestro.
+
+```js
+var Graph = require('gert').Graph;
+
+// [ a ]--1->[ b ]--8->[ c ]
+var graph = new Graph({
+    directed: true,
+    vertices: {
+        a: { labels: ['initial'] }
+    },
+    edges: [
+        ['a', 'b'],
+        { pair: ['b', 'c'], weight: 8 }
+    ]
+});
+
+// [ a ]<-1--[ b ]<-8--[ c ]
+var transposed = graph.transpose();
+var traversal = transposed.traverse('a');
+
+traversal.hop('c').walk('b').walk('a');
+
+traversal.sequence; // ['a', 'c', 'b', 'a']
+traversal.distance; // 9 or (8 + 1)
+
+transposed.equals(traversal.subgraph());  // true
+transposed.getVertices('initial');        // { a: {...} }
+```
 
 ## API
 
@@ -13,7 +46,7 @@ The `Gert.Graph` object is the container for a graph consisting of vertices and 
 
 #### `new Graph(definition)`
 Creates a new `Graph` object. Creates a null, directed graph when `definition` is not specified.  The `definition` is an object used to initialize the graph and contains the following information,
- - `digraph` - if `false` indicates that the graph's edges are undirected rather than directed.  Defaults to `true`.
+ - `directed` - if `false` indicates that the graph's edges are undirected rather than directed.  Defaults to `true`.
  - `vertices` - specifies the graph's vertices in one of two formats,
   - an array of vertex ids (string or numeric) or,
   - an object whose keys are vertex ids and whose values are objects of the form,
@@ -21,7 +54,7 @@ Creates a new `Graph` object. Creates a null, directed graph when `definition` i
     - `data` - free-form data associated with this vertex.
     - `to` - a vertex id or array of vertex ids to which edges should be created from this vertex.
     - `from` - a vertex id or array of vertex ids from which edges should be created to this vertex.
-    - `neighbors` - a vertex id or array of vertex ids that should neighbor this vertex (it cannot include the id of this vertex).  Edges will be created between this vertex and the vertices specified.  Only for use in undirected graphs (`definition.digraph = false`).
+    - `neighbors` - a vertex id or array of vertex ids that should neighbor this vertex (it cannot include the id of this vertex).  Edges will be created between this vertex and the vertices specified.  Only for use in undirected graphs (`definition.directed = false`).
 
 - `edges` - an array of edge definitions, each edge specified in one of two formats,
   - an edge-pair formed as an array of two vertex ids or,
@@ -41,8 +74,8 @@ var graph = new Graph({
 });
 ```
 
-#### `graph.digraph`
-Indicates if the graph's edges are directed.  Should be considered read-only.
+#### `graph.directed`
+Indicates whether the graph's edges are directed.  Should be considered read-only.
 
 #### `graph.vertexExists(v)`
 Returns `true` if a vertex with id `v` exists in the graph, and `false` otherwise.
@@ -158,13 +191,13 @@ An array of visited vertex ids in the order that they were visited.  Should be c
 The sum of the edge weights of the edges traversed using [`traversal.walk()`](#traversalwalkv).  Should be considered read-only.
 
 #### `traversal.hop(v)`
-Visits vertex with id `v` without traversing any edges.  Typically a new traversal begins by calling `traversal.hop()` to visit the first vertex.
+Visits vertex with id `v` without traversing any edges.  A new traversal might begin by calling `traversal.hop()` to visit the first vertex.  Returns `traversal`.
 
 #### `traversal.walk(v)`
-Traverses the edge from the current vertex to vertex with id `v`, visiting `v`.
+Traverses the edge from the current vertex to vertex with id `v`, visiting `v`.  Returns `traversal`.
 
 #### `traversal.currentVertex()`
-Returns vertex info for the currently visited vertex.
+Returns vertex info (see [`graph.getVertex()`](#graphgetvertexv) for the format) of the currently visited vertex, or `null` if no vertex has been visited.
 
 #### `traversal.visits(v)`
 Returns the number of times the traversal has visited the vertex with id `v`,

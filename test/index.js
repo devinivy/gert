@@ -62,7 +62,7 @@ describe('Gert', function () {
 
             var graph = new Graph();
 
-            expect(graph.digraph).to.equal(true);
+            expect(graph.directed).to.equal(true);
             expect(graph.getVertices()).to.deep.equal({});
             expect(graph.getEdges()).to.deep.equal([]);
             done();
@@ -89,7 +89,7 @@ describe('Gert', function () {
                 }
             });
 
-            expect(graph.digraph).to.equal(true);
+            expect(graph.directed).to.equal(true);
 
             var vertices = graph.getVertices();
 
@@ -150,7 +150,7 @@ describe('Gert', function () {
                 }
             });
 
-            expect(graph.digraph).to.equal(true);
+            expect(graph.directed).to.equal(true);
 
             var vertices = graph.getVertices();
 
@@ -224,7 +224,7 @@ describe('Gert', function () {
                 ]
             });
 
-            expect(graph.digraph).to.equal(true);
+            expect(graph.directed).to.equal(true);
 
             var vertices = graph.getVertices();
 
@@ -288,7 +288,7 @@ describe('Gert', function () {
                 ]
             });
 
-            expect(graph.digraph).to.equal(true);
+            expect(graph.directed).to.equal(true);
 
             var vertices = graph.getVertices();
 
@@ -336,7 +336,7 @@ describe('Gert', function () {
         it('definition can create an undirected graph.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {
                         to: 'b'
@@ -353,7 +353,7 @@ describe('Gert', function () {
                 ]
             });
 
-            expect(graph.digraph).to.equal(false);
+            expect(graph.directed).to.equal(false);
 
             var vertices = graph.getVertices();
 
@@ -428,7 +428,7 @@ describe('Gert', function () {
                 edges: [['a', 'b']]
             });
 
-            expect(graph.digraph).to.equal(true);
+            expect(graph.directed).to.equal(true);
 
             var vertices = graph.getVertices();
 
@@ -472,7 +472,7 @@ describe('Gert', function () {
                 }
             });
 
-            expect(graph.digraph).to.equal(true);
+            expect(graph.directed).to.equal(true);
 
             var vertices = graph.getVertices();
 
@@ -544,7 +544,7 @@ describe('Gert', function () {
             });
 
             var nondigraph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {}
                 }
@@ -845,7 +845,7 @@ describe('Gert', function () {
         it('removeVertex(v) removes vertex and related edges from digraph.', function (done) {
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: ['b'],
                     b: ['a', 'c']
@@ -874,7 +874,7 @@ describe('Gert', function () {
         it('removeVertex(v) removes vertex and related edges from non-digraph.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: ['b'],
                     b: ['c']
@@ -991,7 +991,7 @@ describe('Gert', function () {
         it('edgeExists(u, v) and edgeExists([u, v]) indicate whether an edge exists in a graph.', function (done) {
 
             var digraph = new Graph({
-                digraph: true,
+                directed: true,
                 edges: [
                     ['a', 'b'],
                     ['b', 'a'],
@@ -1001,7 +1001,7 @@ describe('Gert', function () {
             });
 
             var nondigraph = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     ['a', 'b'],
                     ['b', 'b']
@@ -1051,7 +1051,7 @@ describe('Gert', function () {
         it('getEdge() is orderless in non-digraphs.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     { pair: ['a', 'b'], weight: 2, labels: ['ab'] }
                 ]
@@ -1150,7 +1150,7 @@ describe('Gert', function () {
         it('getEdges() is orderless in non-digraphs.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     ['a', 'b'],
                     ['b', 'c']
@@ -1170,7 +1170,7 @@ describe('Gert', function () {
         it('addEdge(u, v, info) adds an edge to a digraph.', function (done) {
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: ['a', 'b']
             });
 
@@ -1197,7 +1197,7 @@ describe('Gert', function () {
         it('addEdge(u, v, info) adds an edge to a non-digraph.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: ['a', 'b']
             });
 
@@ -1267,7 +1267,7 @@ describe('Gert', function () {
         it('removeEdge(a, b) removes an edge from a digraph.', function (done) {
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 edges: [
                     ['a', 'b'],
                     ['b', 'a']
@@ -1288,7 +1288,7 @@ describe('Gert', function () {
         it('removeEdge(a, b) removes an edge from a non-digraph.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     ['a', 'b']
                 ]
@@ -1420,8 +1420,8 @@ describe('Gert', function () {
 
         it('equals(graph) says digraphs and non-digraphs are not equal.', function (done) {
 
-            var graph = new Graph({ digraph: false });
-            var digraph = new Graph({ digraph: true });
+            var graph = new Graph({ directed: false });
+            var digraph = new Graph({ directed: true });
 
             expect(graph.equals(digraph)).to.equal(false);
             expect(digraph.equals(graph)).to.equal(false);
@@ -1432,7 +1432,7 @@ describe('Gert', function () {
         it('equals(graph) compares two digraphs, optionally with edge weights.', function (done) {
 
             var graphAOne = new Graph({
-                digraph: true,
+                directed: true,
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
                     { pair: ['b', 'a'], weight: 1 },
@@ -1441,7 +1441,7 @@ describe('Gert', function () {
             });
 
             var graphATwo = new Graph({
-                digraph: true,
+                directed: true,
                 edges: [
                     { pair: ['b', 'c'], weight: -1 },
                     { pair: ['a', 'b'], weight: 2 },
@@ -1450,7 +1450,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: true,
+                directed: true,
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
                     { pair: ['b', 'a'], weight: 10 },
@@ -1459,7 +1459,7 @@ describe('Gert', function () {
             });
 
             var graphC = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: ['d'],
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
@@ -1488,7 +1488,7 @@ describe('Gert', function () {
         it('equals(graph) compares two non-digraphs, optionally with edge weights.', function (done) {
 
             var graphAOne = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
                     { pair: ['b', 'c'], weight: -1 }
@@ -1496,7 +1496,7 @@ describe('Gert', function () {
             });
 
             var graphATwo = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     { pair: ['b', 'c'], weight: -1 },
                     { pair: ['a', 'b'], weight: 2 }
@@ -1504,7 +1504,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
                     { pair: ['b', 'c'], weight: -10 }
@@ -1512,7 +1512,7 @@ describe('Gert', function () {
             });
 
             var graphC = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: ['d'],
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
@@ -1669,7 +1669,7 @@ describe('Gert', function () {
             };
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: {
                         to: ['c', 'd'],
@@ -1715,7 +1715,7 @@ describe('Gert', function () {
             };
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {
                         to: ['c', 'd'],
@@ -1760,7 +1760,7 @@ describe('Gert', function () {
             };
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: { to: ['a', 'b', 'c'], labels: ['ay', 'eh'], data: data.a },
                     b: { to: ['c'], labels: ['bee'] , data: data.b },
@@ -1773,7 +1773,7 @@ describe('Gert', function () {
             var complement = graph.complement();
 
             expect(complement).to.be.instanceof(Graph);
-            expect(complement.digraph).to.equal(true);
+            expect(complement.directed).to.equal(true);
 
             var origVertices = graph.getVertices();
             var vertices = complement.getVertices();
@@ -1822,7 +1822,7 @@ describe('Gert', function () {
             };
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: { to: ['a', 'b', 'c'], labels: ['ay', 'eh'], data: data.a },
                     b: { to: ['c'], labels: ['bee'] , data: data.b },
@@ -1835,7 +1835,7 @@ describe('Gert', function () {
             var complement = graph.complement();
 
             expect(complement).to.be.instanceof(Graph);
-            expect(complement.digraph).to.equal(false);
+            expect(complement.directed).to.equal(false);
 
             var origVertices = graph.getVertices();
             var vertices = complement.getVertices();
@@ -1876,7 +1876,7 @@ describe('Gert', function () {
             };
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: {
                         labels: ['eh', 'ay'],
@@ -1927,7 +1927,7 @@ describe('Gert', function () {
         it('union(graph) constructs a digraph union.', function (done) {
 
             var graphA = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: {
                         labels: ['ay'],
@@ -1948,7 +1948,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: {
                         labels: ['eh'],
@@ -2035,7 +2035,7 @@ describe('Gert', function () {
         it('union(graph) constructs a non-digraph union.', function (done) {
 
             var graphA = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {
                         labels: ['ay'],
@@ -2056,7 +2056,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {
                         labels: ['eh'],
@@ -2149,7 +2149,7 @@ describe('Gert', function () {
             };
 
             var graphA = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: {
                         labels: ['ay', 'eh', 'ah'],
@@ -2168,7 +2168,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: {
                         labels: ['ay', 'eh', 'meh'],
@@ -2194,7 +2194,7 @@ describe('Gert', function () {
             var edgesA = intersectionA.getEdges();
             var edgesB = intersectionB.getEdges();
 
-            expect(intersectionA.digraph).to.equal(true);
+            expect(intersectionA.directed).to.equal(true);
             expect(intersectionA.equals(intersectionB)).to.equal(true);
             expect(Object.keys(verticesA)).to.only.include(['a', 'b', 'c']);
             expect(verticesA.a.data).to.equal(data.A.a);
@@ -2232,7 +2232,7 @@ describe('Gert', function () {
             };
 
             var graphA = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {
                         labels: ['ay', 'eh', 'ah'],
@@ -2251,7 +2251,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {
                         labels: ['ay', 'eh', 'meh'],
@@ -2277,7 +2277,7 @@ describe('Gert', function () {
             var edgesA = intersectionA.getEdges();
             var edgesB = intersectionB.getEdges();
 
-            expect(intersectionA.digraph).to.equal(false);
+            expect(intersectionA.directed).to.equal(false);
             expect(intersectionA.equals(intersectionB)).to.equal(true);
             expect(Object.keys(verticesA)).to.only.include(['a', 'b', 'c']);
             expect(verticesA.a.data).to.equal(data.A.a);
@@ -2313,7 +2313,7 @@ describe('Gert', function () {
             };
 
             var graphA = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: {
                         labels: ['ay', 'eh'],
@@ -2326,7 +2326,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     b: {
                         labels: ['bee'],
@@ -2421,7 +2421,7 @@ describe('Gert', function () {
             };
 
             var graphA = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: {
                         labels: ['ay', 'eh'],
@@ -2434,7 +2434,7 @@ describe('Gert', function () {
             });
 
             var graphB = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     b: {
                         labels: ['bee'],
@@ -2509,7 +2509,7 @@ describe('Gert', function () {
         it('adjacencyMatrix() returns a proper unweighted adjacency matrix and vertex list for digraphs.', function (done) {
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: ['d'],
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
@@ -2529,7 +2529,7 @@ describe('Gert', function () {
         it('adjacencyMatrix() returns a proper unweighted adjacency matrix and vertex list for non-digraphs.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
                     ['b', 'c']
@@ -2547,7 +2547,7 @@ describe('Gert', function () {
         it('adjacencyMatrix(true) returns a proper weighted adjacency matrix and vertex list.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 edges: [
                     { pair: ['a', 'b'], weight: 2 },
                     { pair: ['b', 'c'], weight: -1 }
@@ -2565,7 +2565,7 @@ describe('Gert', function () {
         it('can handle self-loops in non-digraphs.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: ['a']
                 }
@@ -2614,7 +2614,7 @@ describe('Gert', function () {
         it('can handle self-loops in digraphs.', function (done) {
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: ['a']
                 }
@@ -2799,7 +2799,7 @@ describe('Gert', function () {
         it('subgraph() returns a directed subgraph of visited vertices and walked edges.', function (done) {
 
             var graph = new Graph({
-                digraph: true,
+                directed: true,
                 vertices: {
                     a: ['b', 'c'],
                     b: ['c'],
@@ -2834,7 +2834,7 @@ describe('Gert', function () {
         it('subgraph() returns an undirected subgraph of visited vertices and walked edges.', function (done) {
 
             var graph = new Graph({
-                digraph: false,
+                directed: false,
                 vertices: {
                     a: ['b', 'c'],
                     b: [],
