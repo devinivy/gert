@@ -903,6 +903,16 @@ describe('Gert', function () {
             expect(Object.keys(graph.getVertices('ahh'))).to.deep.equal([]);
             expect(Object.keys(graph.getVertices('ayy'))).to.only.contain(['a']);
 
+            graph.updateVertex('a', {
+                labels: {
+                    add: ['add-last'],
+                    remove: ['add-last']
+                }
+            });
+
+            a = graph.getVertex('a');
+            expect(a.labels).to.only.contain(['ayy', 'add-last']);
+
             done();
         });
 
@@ -911,7 +921,7 @@ describe('Gert', function () {
             var graph = new Graph({
                 directed: true,
                 vertices: {
-                    a: ['b'],
+                    a: ['b', 'a'],
                     b: ['a', 'c']
                 }
             });
@@ -940,7 +950,7 @@ describe('Gert', function () {
             var graph = new Graph({
                 directed: false,
                 vertices: {
-                    a: ['b'],
+                    a: ['b', 'a'],
                     b: ['c']
                 }
             });
@@ -1386,6 +1396,17 @@ describe('Gert', function () {
             expect(ab.weight).to.equal(2);
             expect(graph.getEdges('ahh')).to.deep.equal([]);
             expect(edgeFormat(graph.getEdges('ayy')).a.b).to.exist();
+
+            graph.updateEdge('a', 'b', {
+                labels: {
+                    add: ['add-last'],
+                    remove: ['add-last']
+                }
+            });
+
+            ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ayy', 'add-last']);
+            expect(edgeFormat(graph.getEdges('add-last')).a.b).to.exist();
 
             var a = graph.getVertex('a');
             var b = graph.getVertex('b');

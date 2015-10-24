@@ -101,8 +101,19 @@ Returns an object whose keys are vertex ids and whose values are vertices of the
 Adds a new vertex into the graph where,
  - `v` - the vertex's id.
  - `info` - an object containing vertex info of the format,
-   - `labels` - a label (string or numeric) or array of labels to place on this vertex.
+   - `labels` - a label (string or numeric) or array of labels to place on the vertex.
+   - `data` - free-form data associated with the vertex.
+
+#### `graph.updateVertex(v, info)`
+Updates a vertex's labels and/or data where,
+ - `v` - the vertex's id.
+ - `info` - an object containing vertex info to be updated of the format,
+   - `labels` - a label (string or numeric) or array of labels to set on the vertex, removing all existing labels, or an object of the format,
+     - `add` - a label or array of labels to add to the vertex.
+     - `remove` - a label or array of labels to remove from the vertex.
    - `data` - free-form data associated with this vertex.
+
+Note that label removals happen before label additions.
 
 #### `graph.removeVertex(v)`
 Removes vertex with id `v` from the graph, including any incident edges.
@@ -130,6 +141,15 @@ Adds an edge into the graph from vertex `u` to vertex `v` with `info` an optiona
  - `weight` - a numeric weight to place on the edge.  Can be positive, negative, or zero.  Defaults to `1`.
 
 This method also accepts a single array argument containing the edge-pair (e.g. `[u, v]`) in lieu of the first two vertex arguments.
+
+#### `graph.updateEdge(u, v, info)`
+Updates labels and/or weight of the edge from vertex `u` to vertex `v` where `info` is an object of the format,
+   - `labels` - a label (string or numeric) or array of labels to set on the edge, removing all existing labels, or an object of the format,
+     - `add` - a label or array of labels to add to the edge.
+     - `remove` - a label or array of labels to remove from the edge.
+   - `weight` - a numeric weight to set on the edge.
+
+Note that label removals happen before label additions.
 
 #### `graph.removeEdge(u, v)`
 Removes the edge that runs from vertex `u` to vertex `v`.  If the graph is undirected, this simply removes the edge that runs between vertices `u` and `v`.  This method also accepts a single array argument containing the edge-pair (e.g. `[u, v]`).
