@@ -149,7 +149,7 @@ Updates labels and/or weight of the edge from vertex `u` to vertex `v` where `in
      - `remove` - a label or array of labels to remove from the edge.
    - `weight` - a numeric weight to set on the edge.
 
-Note that label removals happen before label additions.
+This method also accepts a single array argument containing the edge-pair (e.g. `[u, v]`) in lieu of the first two vertex arguments.  Note that label removals happen before label additions.
 
 #### `graph.removeEdge(u, v)`
 Removes the edge that runs from vertex `u` to vertex `v`.  If the graph is undirected, this simply removes the edge that runs between vertices `u` and `v`.  This method also accepts a single array argument containing the edge-pair (e.g. `[u, v]`).
