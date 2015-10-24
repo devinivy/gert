@@ -842,6 +842,70 @@ describe('Gert', function () {
             done();
         });
 
+        it('updateVertex(v, info) updates data and labels.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: {
+                        labels: ['eh', 'ay'],
+                        data: 1
+                    }
+                }
+            });
+
+            var a = graph.getVertex('a');
+            expect(a.labels).to.only.contain(['ay', 'eh']);
+            expect(a.data).to.equal(1);
+
+            graph.updateVertex('a', {
+                data: 2
+            });
+
+            a = graph.getVertex('a');
+            expect(a.labels).to.only.contain(['ay', 'eh']);
+            expect(a.data).to.equal(2);
+
+            graph.updateVertex('a', {
+                labels: ['ahh']
+            });
+
+            a = graph.getVertex('a');
+            expect(a.labels).to.only.contain(['ahh']);
+            expect(a.data).to.equal(2);
+            expect(Object.keys(graph.getVertices('ay'))).to.deep.equal([]);
+            expect(Object.keys(graph.getVertices('eh'))).to.deep.equal([]);
+            expect(Object.keys(graph.getVertices('ahh'))).to.only.contain(['a']);
+
+            graph.updateVertex('a', {
+                labels: {
+                    remove: ['ahh'],
+                    add: ['ayy']
+                }
+            });
+
+            a = graph.getVertex('a');
+            expect(a.labels).to.only.contain(['ayy']);
+            expect(Object.keys(graph.getVertices('ahh'))).to.deep.equal([]);
+            expect(Object.keys(graph.getVertices('ayy'))).to.only.contain(['a']);
+
+            graph.updateVertex('a', { labels: {} });
+
+            a = graph.getVertex('a');
+            expect(a.labels).to.only.contain(['ayy']);
+            expect(Object.keys(graph.getVertices('ahh'))).to.deep.equal([]);
+            expect(Object.keys(graph.getVertices('ayy'))).to.only.contain(['a']);
+
+            graph.updateVertex('a', null);
+
+            a = graph.getVertex('a');
+            expect(a.labels).to.only.contain(['ayy']);
+            expect(a.data).to.equal(2);
+            expect(Object.keys(graph.getVertices('ahh'))).to.deep.equal([]);
+            expect(Object.keys(graph.getVertices('ayy'))).to.only.contain(['a']);
+
+            done();
+        });
+
         it('removeVertex(v) removes vertex and related edges from digraph.', function (done) {
 
             var graph = new Graph({
@@ -1260,6 +1324,141 @@ describe('Gert', function () {
                 weight: 1,
                 labels: ['dupe']
             });
+
+            done();
+        });
+
+        it('updateEdge(u, v, info) updates weight and labels on digraphs.', function (done) {
+
+            var graph = new Graph({
+                directed: true,
+                edges: [
+                    { pair: ['a', 'b'], weight: -1, labels: ['ay', 'eh'] }
+                ]
+            });
+
+            var ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ay', 'eh']);
+            expect(ab.weight).to.equal(-1);
+
+            graph.updateEdge('a', 'b', {
+                weight: 2
+            });
+
+            ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ay', 'eh']);
+            expect(ab.weight).to.equal(2);
+
+            graph.updateEdge('a', 'b', {
+                labels: ['ahh']
+            });
+
+            ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ahh']);
+            expect(ab.weight).to.equal(2);
+            expect(graph.getEdges('ay')).to.deep.equal([]);
+            expect(graph.getEdges('eh')).to.deep.equal([]);
+            expect(edgeFormat(graph.getEdges('ahh')).a.b).to.exist();
+
+            graph.updateEdge('a', 'b', {
+                labels: {
+                    remove: ['ahh'],
+                    add: ['ayy']
+                }
+            });
+
+            ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ayy']);
+            expect(graph.getEdges('ahh')).to.deep.equal([]);
+            expect(edgeFormat(graph.getEdges('ayy')).a.b).to.exist();
+
+            graph.updateEdge('a', 'b', { labels: {} });
+
+            ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ayy']);
+            expect(graph.getEdges('ahh')).to.deep.equal([]);
+            expect(edgeFormat(graph.getEdges('ayy')).a.b).to.exist();
+
+            graph.updateEdge('a', 'b', null);
+
+            ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ayy']);
+            expect(ab.weight).to.equal(2);
+            expect(graph.getEdges('ahh')).to.deep.equal([]);
+            expect(edgeFormat(graph.getEdges('ayy')).a.b).to.exist();
+
+            var a = graph.getVertex('a');
+            var b = graph.getVertex('b');
+            expect(a.outdegree).to.equal(1);
+            expect(a.indegree).to.equal(0);
+            expect(b.outdegree).to.equal(0);
+            expect(b.indegree).to.equal(1);
+
+            done();
+        });
+
+        it('updateEdge(u, v, info) updates weight and labels on non-digraphs.', function (done) {
+
+            var graph = new Graph({
+                directed: false,
+                edges: [
+                    { pair: ['a', 'b'], weight: -1, labels: ['ay', 'eh'] }
+                ]
+            });
+
+            var ab = graph.getEdge('a', 'b');
+            var ba = graph.getEdge('b', 'a');
+            expect(ab.labels).to.only.contain(['ay', 'eh']);
+            expect(ab.weight).to.equal(-1);
+            expect(ba.labels).to.only.contain(['ay', 'eh']);
+            expect(ba.weight).to.equal(-1);
+
+            graph.updateEdge('b', 'a', {
+                weight: 2,
+                labels: {
+                    remove: 'eh',
+                    add: 'ah'
+                }
+            });
+
+            ab = graph.getEdge('a', 'b');
+            ba = graph.getEdge('b', 'a');
+            expect(ab.labels).to.only.contain(['ay', 'ah']);
+            expect(ab.weight).to.equal(2);
+            expect(ba.labels).to.only.contain(['ay', 'ah']);
+            expect(ba.weight).to.equal(2);
+
+            var a = graph.getVertex('a');
+            var b = graph.getVertex('b');
+            expect(a.degree).to.equal(1);
+            expect(b.degree).to.equal(1);
+
+            done();
+        });
+
+        it('updateEdge([u, v], info) updates weight and labels on graphs.', function (done) {
+
+            var graph = new Graph({
+                edges: [
+                    { pair: ['a', 'b'], weight: -1, labels: ['ay', 'eh'] }
+                ]
+            });
+
+            var ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ay', 'eh']);
+            expect(ab.weight).to.equal(-1);
+
+            graph.updateEdge(['a', 'b'], {
+                weight: 2,
+                labels: {
+                    remove: 'eh',
+                    add: 'ah'
+                }
+            });
+
+            ab = graph.getEdge('a', 'b');
+            expect(ab.labels).to.only.contain(['ay', 'ah']);
+            expect(ab.weight).to.equal(2);
 
             done();
         });
