@@ -1638,6 +1638,43 @@ describe('Gert', function () {
             done();
         });
 
+        it('size() returns the size of a graph or digraph.', function (done) {
+
+            var digraph = new Graph({
+                directed: true,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'a'],
+                    ['b', 'c'],
+                    ['b', 'b']
+                ]
+            });
+
+            digraph.addEdge('c', 'a');
+            digraph.addEdge('c', 'b');
+            digraph.removeEdge('a', 'b');
+            digraph.updateEdge('c', 'a', {});
+
+            var nondigraph = new Graph({
+                directed: false,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c'],
+                    ['b', 'b']
+                ]
+            });
+
+            nondigraph.removeEdge('a', 'b');
+            nondigraph.removeEdge('b', 'c');
+            nondigraph.addEdge('c', 'a');
+            nondigraph.updateEdge('b', 'b', {});
+
+            expect(digraph.size()).to.equal(5);
+            expect(nondigraph.size()).to.equal(2);
+
+            done();
+        });
+
         it('equals(graph) says digraphs and non-digraphs are not equal.', function (done) {
 
             var graph = new Graph({ directed: false });

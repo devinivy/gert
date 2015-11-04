@@ -157,6 +157,9 @@ Removes the edge that runs from vertex `u` to vertex `v`.  If the graph is undir
 #### `graph.removeEdges(edgePairsOrLabel)`
 Removes a collection of edges from the graph.  If `edgePairsOrLabel` is an array of edge-pairs (each edge-pair an array of two vertex ids), those edges will be removed.  If `edgePairsOrLabel` is a label, all edges with that label will be removed.
 
+#### `graph.size()`
+Returns the number of edges in the graph.
+
 #### `graph.equals(anotherGraph, [matchWeights])`
 Returns `true` when `anotherGraph` has the same graph structure and vertex ids, and returns `false` otherwise.  This ignores all labels and vertex data, but takes into account if the graphs are directed or not.  When `matchWeights` is `true`, it will require that edge weights also correspond for the two graphs to be considered equal.
 
