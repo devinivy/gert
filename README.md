@@ -94,8 +94,8 @@ Returns vertex `v` in an object of the following format,
 
 If no such vertex is found, returns `null`.
 
-#### `graph.getVertices(vertexIdsOrLabel)`
-Returns an object whose keys are vertex ids and whose values are vertices of the format specified in [`graph.getVertex()`](#graphgetvertexv).  If `vertexIdsOrLabel` is an array of vertex ids, the returned object will contain entries for every such vertex that is found in the graph.  If `vertexIdsOrLabel` is a label, the returned object will contain entries for all vertices that have that label.
+#### `graph.getVertices(vertexIdsOrLabel, [onlyIds])`
+Returns an object whose keys are vertex ids and whose values are vertices of the format specified in [`graph.getVertex()`](#graphgetvertexv).  If `onlyIds` is specified as `true`, an array of unique vertex ids is returned instead.  When `vertexIdsOrLabel` is an array of vertex ids, the returned object/array will contain entries for every such vertex that is found in the graph.  If `vertexIdsOrLabel` is a label, the returned object/array will contain entries for all vertices that have that label.
 
 #### `graph.addVertex(v, [info])`
 Adds a new vertex into the graph where,

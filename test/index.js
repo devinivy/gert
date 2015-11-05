@@ -610,7 +610,7 @@ describe('Gert', function () {
             done();
         });
 
-        it('getVertices() returns all vertices.', function (done) {
+        it('getVertices(null, [onlyIds]) returns all vertices.', function (done) {
 
             var data = {
                 b: {},
@@ -633,6 +633,7 @@ describe('Gert', function () {
             });
 
             var vertices = graph.getVertices();
+            var vertexIds = graph.getVertices(null, true);
 
             expect(vertices).to.deep.equal({
                 a: {
@@ -664,10 +665,12 @@ describe('Gert', function () {
                 }
             });
 
+            expect(vertexIds).to.only.include(['a', 'b', 'c']);
+
             done();
         });
 
-        it('getVertices(array) returns specified vertices.', function (done) {
+        it('getVertices(array, [onlyIds]) returns specified vertices.', function (done) {
 
             var data = {
                 b: {},
@@ -690,6 +693,7 @@ describe('Gert', function () {
             });
 
             var vertices = graph.getVertices(['a', 'c', 'not']);
+            var vertexIds = graph.getVertices(['a', 'c', 'not'], true);
 
             expect(vertices).to.deep.equal({
                 a: {
@@ -712,10 +716,12 @@ describe('Gert', function () {
                 }
             });
 
+            expect(vertexIds).to.only.include(['a', 'c']);
+
             done();
         });
 
-        it('getVertices(label) returns vertices by label.', function (done) {
+        it('getVertices(label, [onlyIds]) returns vertices by label.', function (done) {
 
             var graph = new Graph({
                 vertices: {
@@ -762,16 +768,30 @@ describe('Gert', function () {
             };
 
             var consonants = graph.getVertices('consonant');
+            var consonantIds = graph.getVertices('consonant', true);
+
             var vowels = graph.getVertices('vowel');
+            var vowelIds = graph.getVertices('vowel', true);
+
             var abs = graph.getVertices('ab');
+            var abIds = graph.getVertices('ab', true);
+
             var seas = graph.getVertices('sea');
+            var seaIds = graph.getVertices('sea', true);
+
             var none = graph.getVertices('none');
+            var noneIds = graph.getVertices('none', true);
 
             expect(consonants).to.deep.equal({ b: expected.b, c: expected.c });
+            expect(consonantIds).to.only.include(['b', 'c']);
             expect(vowels).to.deep.equal({ a: expected.a });
+            expect(vowelIds).to.only.include(['a']);
             expect(abs).to.deep.equal({ a: expected.a, b: expected.b });
+            expect(abIds).to.only.include(['a', 'b']);
             expect(seas).to.deep.equal({ c: expected.c });
+            expect(seaIds).to.only.include(['c']);
             expect(none).to.deep.equal({});
+            expect(noneIds).to.deep.equal([]);
 
             done();
         });
