@@ -1162,7 +1162,7 @@ describe('Gert', function () {
             done();
         });
 
-        it('getEdges() without arguments returns all edges.', function (done) {
+        it('getEdges(null, [onlyPairs]) returns all edges.', function (done) {
 
             var graph = new Graph({
                 edges: [
@@ -1174,6 +1174,7 @@ describe('Gert', function () {
             });
 
             var edges = graph.getEdges();
+            var edgePairs = graph.getEdges(null, true);
 
             expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: [] },
@@ -1182,10 +1183,17 @@ describe('Gert', function () {
                 { pair: ['b', 'a'], weight: 1, labels: [] }
             ]));
 
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b'],
+                ['b', 'c'],
+                ['b', 'a'],
+                ['c', 'a']
+            ]);
+
             done();
         });
 
-        it('getEdges(array) returns specified edges, ignores non-edges.', function (done) {
+        it('getEdges(array, [onlyPairs]) returns specified edges, ignores non-edges.', function (done) {
 
             var graph = new Graph({
                 edges: [
@@ -1197,16 +1205,22 @@ describe('Gert', function () {
             });
 
             var edges = graph.getEdges([['a', 'b'], ['c', 'a'], ['c', 'b']]);
+            var edgePairs = graph.getEdges([['a', 'b'], ['c', 'a'], ['c', 'b']], true);
 
             expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: [] },
                 { pair: ['c', 'a'], weight: 1, labels: [] }
             ]));
 
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b'],
+                ['c', 'a']
+            ]);
+
             done();
         });
 
-        it('getEdges(label) returns edges by label.', function (done) {
+        it('getEdges(label, [onlyPairs]) returns edges by label.', function (done) {
 
             var graph = new Graph({
                 edges: [
@@ -1218,25 +1232,44 @@ describe('Gert', function () {
             });
 
             var tall = graph.getEdges('tall');
+            var tallPairs = graph.getEdges('tall', true);
+
             var cold = graph.getEdges('cold');
+            var coldPairs = graph.getEdges('cold', true);
+
             var short = graph.getEdges('short');
+            var shortPairs = graph.getEdges('short', true);
+
             var non = graph.getEdges('non');
+            var nonPairs = graph.getEdges('non', true);
 
             expect(edgeFormat(tall)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: ['tall'] },
                 { pair: ['b', 'c'], weight: 1, labels: ['tall', 'cold'] }
             ]));
+            expect(tallPairs).to.deep.equal([
+                ['a', 'b'],
+                ['b', 'c']
+            ]);
 
             expect(edgeFormat(cold)).to.deep.equal(edgeFormat([
                 { pair: ['b', 'c'], weight: 1, labels: ['tall', 'cold'] }
             ]));
+            expect(coldPairs).to.deep.equal([
+                ['b', 'c']
+            ]);
 
             expect(edgeFormat(short)).to.deep.equal(edgeFormat([
                 { pair: ['c', 'a'], weight: 1, labels: ['short'] },
                 { pair: ['b', 'a'], weight: 1, labels: ['short'] }
             ]));
+            expect(shortPairs).to.deep.equal([
+                ['c', 'a'],
+                ['b', 'a']
+            ]);
 
             expect(non).to.deep.equal([]);
+            expect(nonPairs).to.deep.equal([]);
 
             done();
         });
