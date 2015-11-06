@@ -2985,6 +2985,7 @@ describe('Gert', function () {
             expect(traversal.currentVertex()).to.equal(null);
             expect(traversal.sequence).to.deep.equal([]);
             expect(traversal.distance).to.equal(0);
+            expect(traversal.recording).to.equal(false);
 
             done();
         });
@@ -3106,6 +3107,31 @@ describe('Gert', function () {
             done();
         });
 
+        it('vistedVertices() returns an array of visited vertex ids.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b', 'c'],
+                    b: ['c'],
+                    c: ['a'],
+                    d: []
+                }
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a')
+            .walk('b').hop('a')
+            .walk('c').walk('a')
+            .walk('b').hop('a')
+            .hop('c').walk('a')
+            .walk('c');
+
+            expect(traversal.visitedVertices()).to.only.include(['a', 'b', 'c']);
+
+            done();
+        });
+
         it('subgraph() returns a directed subgraph of visited vertices and walked edges.', function (done) {
 
             var graph = new Graph({
@@ -3188,10 +3214,12 @@ describe('Gert', function () {
 
             var traversal = new Traversal(graph);
 
-            traversal.hop('a').walk('b')
+            traversal.record()
+            .hop('a').walk('b')
             .walk('c').walk('b')
             .walk('c').walk('b')
-            .hop('e');
+            .hop('e')
+            .stop();
 
             var replayed = traversal.play();
 
@@ -3231,10 +3259,12 @@ describe('Gert', function () {
 
             var traversal = new Traversal(graphOne);
 
-            traversal.hop('a').walk('b')
+            traversal.record()
+            .hop('a').walk('b')
             .walk('c').walk('b')
             .walk('c').walk('b')
-            .hop('e');
+            .hop('e')
+            .stop();
 
             var replayed = traversal.play(graphTwo);
 
@@ -3244,6 +3274,34 @@ describe('Gert', function () {
             expect(traversal.sequence).to.deep.equal(replayed.sequence);
             expect(2 * traversal.distance).to.equal(replayed.distance);
             expect(traversal.currentVertex().id).to.equal(replayed.currentVertex().id);
+
+            done();
+        });
+
+        it('record() and stop() manage recording state.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a', 'b', 'c', 'd', 'e'],
+                edges: [
+                    ['d', 'a']
+                ]
+            });
+
+            var traversal = new Traversal(graph);
+            expect(traversal.recording).to.equal(false);
+
+            traversal.record();
+            expect(traversal.recording).to.equal(true);
+
+            traversal.hop('b').hop('e').hop('d').walk('a');
+            traversal.stop();
+            expect(traversal.recording).to.equal(false);
+
+            traversal.hop('d').hop('a').hop('d').walk('a');
+            expect(traversal.sequence).to.deep.equal(['b', 'e', 'd', 'a', 'd', 'a', 'd', 'a']);
+
+            var replayed = traversal.play();
+            expect(replayed.sequence).to.deep.equal(['b', 'e', 'd', 'a']);
 
             done();
         });

@@ -213,6 +213,9 @@ An array of visited vertex ids in the order that they were visited.  Should be c
 #### `traversal.distance`
 The sum of the edge weights of the edges traversed using [`traversal.walk()`](#traversalwalkv).  Should be considered read-only.
 
+#### `traversal.recording`
+A boolean indicating if recording is currently active, per [`traversal.record()`](#traversalrecord) and [`traversal.stop()`](#traversalstop).  Should be considered read-only.
+
 #### `traversal.hop(v)`
 Visits vertex with id `v` without traversing any edges.  A new traversal might begin by calling `traversal.hop()` to visit the first vertex.  Returns `traversal`.
 
@@ -228,5 +231,11 @@ Returns the number of times the traversal has visited the vertex with id `v`,
 #### `traversal.subgraph()`
 Returns a `Graph` representing the subgraph of visited nodes and traversed edges.
 
+#### `traversal.record()`
+Start recording traversal.
+
+#### `traversal.stop()`
+Stop recording traversal.
+
 #### `traversal.play([graph])`
-Returns a new `Traversal` of the in-progress traversal played over `graph`.  It calls [`traversal.hop()`](#traversalhopv) and [`traversal.walk()`](#traversalwalkv) in the order they were called on `traversal`.  If `graph` isn't specified, the traversal will be replayed over [`traversal.graph`](#traversalgraph).
+Returns a new `Traversal` of the recorded traversal steps played over `graph`.  It calls [`traversal.hop()`](#traversalhopv) and [`traversal.walk()`](#traversalwalkv) in the order they were called on `traversal` while recording was active.  If `graph` isn't specified, the traversal steps will be replayed over [`traversal.graph`](#traversalgraph).
