@@ -1285,11 +1285,69 @@ describe('Gert', function () {
             });
 
             var edges = graph.getEdges();
+            var edgePairs = graph.getEdges(null, true);
 
             expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: [] },
                 { pair: ['b', 'c'], weight: 1, labels: [] }
             ]));
+
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b'],
+                ['b', 'c']
+            ]);
+
+            done();
+        });
+
+        it('getEdges() returns unique, existing edges in non-digraphs.', function (done) {
+
+            var graph = new Graph({
+                directed: false,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c']
+                ]
+            });
+
+            var query = [['b', 'a'], ['b', 'a'], ['b', 'd'], ['a', 'b']];
+
+            var edges = graph.getEdges(query);
+            var edgePairs = graph.getEdges(query, true);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['b', 'a'], weight: 1, labels: [] }
+            ]));
+
+            expect(edgePairs).to.deep.equal([
+                ['b', 'a']
+            ]);
+
+            done();
+        });
+
+        it('getEdges() returns unique, existing edges in digraphs.', function (done) {
+
+            var graph = new Graph({
+                directed: true,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c']
+                ]
+            });
+
+            var query = [['a', 'b'], ['b', 'd'], ['a', 'b']];
+
+            var edges = graph.getEdges(query);
+            var edgePairs = graph.getEdges(query, true);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 1, labels: [] }
+            ]));
+
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b']
+            ]);
 
             done();
         });

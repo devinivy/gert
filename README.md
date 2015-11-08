@@ -133,7 +133,7 @@ Returns the edge from vertex `u` to vertex `v` in an object of the following for
 If no such edge is found, returns `null`.  This method also accepts a single array argument containing the edge-pair (e.g. `[u, v]`).  Note that if the graph is undirected, this returns the edge between vertex `u` and vertex `v` irrespective of their order.
 
 #### `graph.getEdges(edgePairsOrLabel, [onlyPairs])`
-Returns an array of edges in the format specified in [`graph.getEdge()`](#graphgetedgeu-v).  If `onlyPairs` is specified as `true`, each entry is an edge-pair (an array of two vertex ids) rather than a complete edge object.  When `edgePairsOrLabel` is an array of edge-pairs, there will be an entry for each such edge-pair that exists in the graph.  If `edgePairsOrLabel` is a label, there will be an entry for each edge that has the specified label.
+Returns an array of edges in the format specified in [`graph.getEdge()`](#graphgetedgeu-v).  If `onlyPairs` is specified as `true`, each entry is an edge-pair (an array of two vertex ids) rather than a complete edge object.  When `edgePairsOrLabel` is an array of edge-pairs, there will be an entry for each such edge-pair that exists in the graph.  If `edgePairsOrLabel` is a label, there will be an entry for each edge that has the specified label.  The result contains a unique entry per edges; e.g. `graph.getEdges([['a', 'b'], ['a', 'b']])` will contain just one entry for the edge between `a` and `b` if such an edge exists.
 
 #### `graph.addEdge(u, v, [info])`
 Adds an edge into the graph from vertex `u` to vertex `v` with `info` an optional object of the format,
