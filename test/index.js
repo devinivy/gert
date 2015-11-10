@@ -3156,6 +3156,63 @@ describe('Gert', function () {
             done();
         });
 
+        it('while(step) returns immediately if there\'s no initial vertex.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a']
+            });
+
+            var traversal = new Traversal(graph);
+
+            var stepped = false;
+            traversal.while(function (v) {
+
+                stepped = true;
+                return false;
+            });
+
+            expect(stepped).to.equal(false);
+
+            done();
+        });
+
+        it('while(step) steps until indicated not to continue.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b'],
+                    b: ['c']
+                }
+            });
+
+            var traversal = new Traversal(graph);
+            traversal.hop('a');
+
+            traversal.while(function (vertex) {
+
+                expect(this).to.equal(traversal);
+
+                if (vertex.id === 'a') {
+                    this.walk('b');
+                    return true;
+                }
+
+                if (vertex.id === 'b') {
+                    this.walk('c');
+                    return true;
+                }
+
+                if (vertex.id === 'c') {
+                    return false;
+                }
+
+            });
+
+            expect(traversal.sequence).to.deep.equal(['a', 'b', 'c']);
+
+            done();
+        });
+
         it('vists(v) returns the number of times the specified vertex has been visited.', function (done) {
 
             var graph = new Graph({
@@ -3367,7 +3424,7 @@ describe('Gert', function () {
             var traversal = new Traversal(graph);
             expect(traversal.recording).to.equal(false);
 
-            traversal.record();
+            traversal.hop('a').record();
             expect(traversal.recording).to.equal(true);
 
             traversal.hop('b').hop('e').hop('d').walk('a');
@@ -3375,7 +3432,7 @@ describe('Gert', function () {
             expect(traversal.recording).to.equal(false);
 
             traversal.hop('d').hop('a').hop('d').walk('a');
-            expect(traversal.sequence).to.deep.equal(['b', 'e', 'd', 'a', 'd', 'a', 'd', 'a']);
+            expect(traversal.sequence).to.deep.equal(['a', 'b', 'e', 'd', 'a', 'd', 'a', 'd', 'a']);
 
             var replayed = traversal.play();
             expect(replayed.sequence).to.deep.equal(['b', 'e', 'd', 'a']);
