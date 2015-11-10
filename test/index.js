@@ -2865,11 +2865,30 @@ describe('Gert', function () {
             });
 
             var traversal = graph.traverse('a');
+            var traversalPlayed = traversal.play();
 
             expect(traversal).to.be.instanceof(Traversal);
             expect(traversal.graph).to.equal(graph);
             expect(traversal.currentVertex().id).to.equal('a');
             expect(traversal.distance).to.equal(0);
+
+            expect(traversal.recording).to.equal(false);
+            expect(traversalPlayed.currentVertex()).to.equal(null);
+
+            done();
+        });
+
+        it('traverse(starting, true) creates a recording traversal.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a']
+            });
+
+            var traversal = graph.traverse('a', true);
+            var traversalPlayed = traversal.play();
+
+            expect(traversal.recording).to.equal(true);
+            expect(traversalPlayed.currentVertex().id).to.equal('a');
 
             done();
         });

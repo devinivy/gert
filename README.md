@@ -9,7 +9,7 @@ Gert is here to help you create and traverse graphs of all shapes and sizes: dir
 
 Gert's interface aims to be understandable, lean, readable, and useful.  And the terminology used in Gert is consistent with "the literature", so if you're not familiar with what something means, combing the web or a relevant book should be sufficient to elucidate.
 
-If you dig into the API we think you'll find Gert to be quite the flexible little graph maestro.
+A key feature of the library is that edges and vertices may be arbitrarily tagged and retrieved with an efficient labeling system.  If you dig into the API we think you'll find Gert to be quite the flexible little graph maestro.
 
 ```js
 var Graph = require('gert').Graph;
@@ -18,7 +18,8 @@ var Graph = require('gert').Graph;
 var graph = new Graph({
     directed: true,
     vertices: {
-        a: { labels: ['initial'] }
+        a: { labels: ['black'] },
+        b: { labels: ['black'] }
     },
     edges: [
         ['a', 'b'],
@@ -36,7 +37,7 @@ traversal.sequence; // ['a', 'c', 'b', 'a']
 traversal.distance; // 9 or (8 + 1)
 
 transposed.equals(traversal.subgraph());  // true
-transposed.getVertices('initial');        // { a: {...} }
+transposed.getVertices('black');        // { a: {...}, b: {...} }
 ```
 
 ## API
@@ -190,8 +191,8 @@ Returns a new `Graph` representing the graph intersection of `graph` and `anothe
 #### `graph.join(anotherGraph, [weight], [oneWay])`
 Returns a new `Graph` representing the graph join of `graph` and `anotherGraph`.  When `weight` is specified, the edges constructed between the two graphs will be given that weight; otherwise they are given the default weight of `1`.  When the graphs are directed and `oneWay` is `true`, the edges constructed between the two graphs will only go from vertices in `graph` to vertices in `anotherGraph` but not vice-versa; by default edges are constructed in both directions.  The two graphs must be mutually directed or undirected and not share any common vertex ids.
 
-#### `graph.traverse([startingVertex])`
-Returns a new `Traversal` of `graph`.  Optionally `startingVertex` may specify a vertex id within `graph` from which to begin the traversal.  In that case, `startingVertex` specifies the first visited vertex.
+#### `graph.traverse([startingVertex], [record])`
+Returns a new `Traversal` of `graph`.  Optionally `startingVertex` may specify a vertex id within `graph` from which to begin the traversal.  In that case, `startingVertex` specifies the first visited vertex.  If `record` is `true`, traversal recording will be active (see [`traversal.record()`](#traversalrecord)).
 
 #### `graph.adjacencyMatrix([weighted])`
 Returns the graph's adjacency matrix as object of the format,
