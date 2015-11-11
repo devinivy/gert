@@ -226,11 +226,8 @@ Traverses the edge from the current vertex to vertex with id `v`, visiting `v`. 
 #### `traversal.currentVertex()`
 Returns vertex info (see [`graph.getVertex()`](#graphgetvertexv) for the format) of the currently visited vertex, or `null` if no vertex has been visited.
 
-#### `traversal.while(step)`
-The function `step(vertex)` is called with `vertex` the current vertex of the traversal until `step` returns a falsey value.  Inside the `step` function `this` refers to `traversal`.  If there is no current vertex when the process begins then no action is taken.  Returns `traversal`.
-
 #### `traversal.visits(v)`
-Returns the number of times the traversal has visited the vertex with id `v`.
+Returns the number of times the traversal has visited the vertex with id `v`,
 
 #### `traversal.subgraph()`
 Returns a `Graph` representing the subgraph of visited nodes and traversed edges.
