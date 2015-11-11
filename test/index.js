@@ -3367,7 +3367,7 @@ describe('Gert', function () {
             var traversal = new Traversal(graph);
             expect(traversal.recording).to.equal(false);
 
-            traversal.record();
+            traversal.hop('a').record();
             expect(traversal.recording).to.equal(true);
 
             traversal.hop('b').hop('e').hop('d').walk('a');
@@ -3375,7 +3375,7 @@ describe('Gert', function () {
             expect(traversal.recording).to.equal(false);
 
             traversal.hop('d').hop('a').hop('d').walk('a');
-            expect(traversal.sequence).to.deep.equal(['b', 'e', 'd', 'a', 'd', 'a', 'd', 'a']);
+            expect(traversal.sequence).to.deep.equal(['a', 'b', 'e', 'd', 'a', 'd', 'a', 'd', 'a']);
 
             var replayed = traversal.play();
             expect(replayed.sequence).to.deep.equal(['b', 'e', 'd', 'a']);

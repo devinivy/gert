@@ -227,7 +227,7 @@ Traverses the edge from the current vertex to vertex with id `v`, visiting `v`. 
 Returns vertex info (see [`graph.getVertex()`](#graphgetvertexv) for the format) of the currently visited vertex, or `null` if no vertex has been visited.
 
 #### `traversal.visits(v)`
-Returns the number of times the traversal has visited the vertex with id `v`,
+Returns the number of times the traversal has visited the vertex with id `v`.
 
 #### `traversal.subgraph()`
 Returns a `Graph` representing the subgraph of visited nodes and traversed edges.
