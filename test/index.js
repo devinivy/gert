@@ -1749,7 +1749,7 @@ describe('Gert', function () {
             done();
         });
 
-        it('size() returns the size of a graph or digraph.', function (done) {
+        it('size() returns the size of a non-digraph or digraph.', function (done) {
 
             var digraph = new Graph({
                 directed: true,
@@ -1782,6 +1782,22 @@ describe('Gert', function () {
 
             expect(digraph.size()).to.equal(5);
             expect(nondigraph.size()).to.equal(2);
+
+            done();
+        });
+
+        it('order() returns the order of a graph.', function (done) {
+
+            var digraph = new Graph({
+                vertices: ['a', 'd']
+            });
+
+            digraph.addVertex('c');
+            digraph.addVertex('b');
+            digraph.removeVertex('a');
+            digraph.updateVertex('c', { data: [] });
+
+            expect(digraph.order()).to.equal(3);
 
             done();
         });
