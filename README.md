@@ -204,7 +204,7 @@ Returns the graph's adjacency matrix as object of the format,
 
 
 ### `Gert.Traversal`
-The `Gert.Traversal` object is the container for traversing the vertices and edges of a graph.  It records the traversal so that it can be replayed over another graph.  It also keeps some information about the trip, such as the total distance traveled.
+The `Gert.Traversal` object is the container for traversing the vertices and edges of a graph.  It optionally records the traversal so that it can be replayed over another graph, and additionally emits useful [events](#events).  It also keeps track of some information about the trip, such as the total distance traveled.
 
 #### `new Traversal(graph)`
 Creates a new `Traversal` object.  The `graph` specified is the `Graph` that will be traversed.
