@@ -202,6 +202,7 @@ Returns the graph's adjacency matrix as object of the format,
  - `vertices` - an array (ordering) of the vertex ids in `graph`.
  - `matrix` - an array of arrays, each representing a row in the adjacency matrix.  The vertex-order of the rows and columns corresponds to the order of the returned `vertices` property.  When `weighted` is `true`, the non-zero entries in the adjacency matrix contain the corresponding edge weight rather than `1`.
 
+
 ### `Gert.Traversal`
 The `Gert.Traversal` object is the container for traversing the vertices and edges of a graph.  It records the traversal so that it can be replayed over another graph.  It also keeps some information about the trip, such as the total distance traveled.
 
@@ -236,10 +237,10 @@ Returns the number of times the traversal has visited the vertex with id `v`.
 Returns a `Graph` representing the subgraph of visited nodes and traversed edges.
 
 #### `traversal.record()`
-Start recording traversal.
+Start recording traversal.  Returns `traversal`.
 
 #### `traversal.stop()`
-Stop recording traversal.
+Stop recording traversal.  Returns `traversal`.
 
 #### `traversal.play([graph])`
 Returns a new `Traversal` of the recorded traversal steps played over `graph`.  It calls [`traversal.hop()`](#traversalhopv) and [`traversal.walk()`](#traversalwalkv) in the order they were called on `traversal` while recording was active.  If `graph` isn't specified, the traversal steps will be replayed over [`traversal.graph`](#traversalgraph).
