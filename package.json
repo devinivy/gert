@@ -1,6 +1,6 @@
 {
   "name": "gert",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A graph library intended to delight you, Gert, and Arthur.",
   "main": "lib/index.js",
   "directories": {
