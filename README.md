@@ -9,7 +9,7 @@ Gert is here to help you create and traverse graphs of all shapes and sizes: dir
 
 Gert's interface aims to be understandable, lean, readable, and useful.  And the terminology used in Gert is consistent with "the literature", so if you're not familiar with what something means, combing the web or a relevant book should be sufficient to elucidate.
 
-If you dig into the API we think you'll find Gert to be quite the flexible little graph maestro.
+A key feature of the library is that edges and vertices may be arbitrarily tagged and retrieved with an efficient labeling system.  If you dig into the API we think you'll find Gert to be quite the flexible little graph maestro.
 
 ```js
 var Graph = require('gert').Graph;
@@ -18,7 +18,8 @@ var Graph = require('gert').Graph;
 var graph = new Graph({
     directed: true,
     vertices: {
-        a: { labels: ['initial'] }
+        a: { labels: ['black'] },
+        b: { labels: ['black'] }
     },
     edges: [
         ['a', 'b'],
@@ -36,7 +37,7 @@ traversal.sequence; // ['a', 'c', 'b', 'a']
 traversal.distance; // 9 or (8 + 1)
 
 transposed.equals(traversal.subgraph());  // true
-transposed.getVertices('initial');        // { a: {...} }
+transposed.getVertices('black');        // { a: {...}, b: {...} }
 ```
 
 ## API
@@ -94,8 +95,8 @@ Returns vertex `v` in an object of the following format,
 
 If no such vertex is found, returns `null`.
 
-#### `graph.getVertices(vertexIdsOrLabel)`
-Returns an object whose keys are vertex ids and whose values are vertices of the format specified in [`graph.getVertex()`](#graphgetvertexv).  If `vertexIdsOrLabel` is an array of vertex ids, the returned object will contain entries for every such vertex that is found in the graph.  If `vertexIdsOrLabel` is a label, the returned object will contain entries for all vertices that have that label.
+#### `graph.getVertices(vertexIdsOrLabel, [onlyIds])`
+Returns an object whose keys are vertex ids and whose values are vertices of the format specified in [`graph.getVertex()`](#graphgetvertexv).  If `onlyIds` is specified as `true`, an array of unique vertex ids is returned instead.  When `vertexIdsOrLabel` is an array of vertex ids, the returned object/array will contain entries for every such vertex that is found in the graph.  If `vertexIdsOrLabel` is a label, the returned object/array will contain entries for all vertices that have that label.
 
 #### `graph.addVertex(v, [info])`
 Adds a new vertex into the graph where,
@@ -132,8 +133,8 @@ Returns the edge from vertex `u` to vertex `v` in an object of the following for
 
 If no such edge is found, returns `null`.  This method also accepts a single array argument containing the edge-pair (e.g. `[u, v]`).  Note that if the graph is undirected, this returns the edge between vertex `u` and vertex `v` irrespective of their order.
 
-#### `graph.getEdges(edgePairsOrLabel)`
-Returns an array of edges in the format specified in [`graph.getEdge()`](#graphgetedgeu-v).  If `edgePairsOrLabel` is an array of edge-pairs (each edge-pair an array of two vertex ids), there will be an entry for each such edge-pair that exists in the graph.  If `edgePairsOrLabel` is a label, there will be an entry for each edge that has the specified label.
+#### `graph.getEdges(edgePairsOrLabel, [onlyPairs])`
+Returns an array of edges in the format specified in [`graph.getEdge()`](#graphgetedgeu-v).  If `onlyPairs` is specified as `true`, each entry is an edge-pair (an array of two vertex ids) rather than a complete edge object.  When `edgePairsOrLabel` is an array of edge-pairs, there will be an entry for each such edge-pair that exists in the graph.  If `edgePairsOrLabel` is a label, there will be an entry for each edge that has the specified label.  The result contains a unique entry per edges; e.g. `graph.getEdges([['a', 'b'], ['a', 'b']])` will contain just one entry for the edge between `a` and `b` if such an edge exists.
 
 #### `graph.addEdge(u, v, [info])`
 Adds an edge into the graph from vertex `u` to vertex `v` with `info` an optional object of the format,
@@ -156,6 +157,12 @@ Removes the edge that runs from vertex `u` to vertex `v`.  If the graph is undir
 
 #### `graph.removeEdges(edgePairsOrLabel)`
 Removes a collection of edges from the graph.  If `edgePairsOrLabel` is an array of edge-pairs (each edge-pair an array of two vertex ids), those edges will be removed.  If `edgePairsOrLabel` is a label, all edges with that label will be removed.
+
+#### `graph.size()`
+Returns the number of edges in the graph.
+
+#### `graph.order()`
+Returns the number of vertices in the graph.
 
 #### `graph.equals(anotherGraph, [matchWeights])`
 Returns `true` when `anotherGraph` has the same graph structure and vertex ids, and returns `false` otherwise.  This ignores all labels and vertex data, but takes into account if the graphs are directed or not.  When `matchWeights` is `true`, it will require that edge weights also correspond for the two graphs to be considered equal.
@@ -187,16 +194,17 @@ Returns a new `Graph` representing the graph intersection of `graph` and `anothe
 #### `graph.join(anotherGraph, [weight], [oneWay])`
 Returns a new `Graph` representing the graph join of `graph` and `anotherGraph`.  When `weight` is specified, the edges constructed between the two graphs will be given that weight; otherwise they are given the default weight of `1`.  When the graphs are directed and `oneWay` is `true`, the edges constructed between the two graphs will only go from vertices in `graph` to vertices in `anotherGraph` but not vice-versa; by default edges are constructed in both directions.  The two graphs must be mutually directed or undirected and not share any common vertex ids.
 
-#### `graph.traverse([startingVertex])`
-Returns a new `Traversal` of `graph`.  Optionally `startingVertex` may specify a vertex id within `graph` from which to begin the traversal.  In that case, `startingVertex` specifies the first visited vertex.
+#### `graph.traverse([startingVertex], [record])`
+Returns a new `Traversal` of `graph`.  Optionally `startingVertex` may specify a vertex id within `graph` from which to begin the traversal.  In that case, `startingVertex` specifies the first visited vertex.  If `record` is `true`, traversal recording will be active (see [`traversal.record()`](#traversalrecord)).
 
 #### `graph.adjacencyMatrix([weighted])`
 Returns the graph's adjacency matrix as object of the format,
  - `vertices` - an array (ordering) of the vertex ids in `graph`.
  - `matrix` - an array of arrays, each representing a row in the adjacency matrix.  The vertex-order of the rows and columns corresponds to the order of the returned `vertices` property.  When `weighted` is `true`, the non-zero entries in the adjacency matrix contain the corresponding edge weight rather than `1`.
 
+
 ### `Gert.Traversal`
-The `Gert.Traversal` object is the container for traversing the vertices and edges of a graph.  It records the traversal so that it can be replayed over another graph.  It also keeps some information about the trip, such as the total distance traveled.
+The `Gert.Traversal` object is the container for traversing the vertices and edges of a graph.  It optionally records the traversal so that it can be replayed over another graph, and additionally emits useful [events](#events).  It also keeps track of some information about the trip, such as the total distance traveled.
 
 #### `new Traversal(graph)`
 Creates a new `Traversal` object.  The `graph` specified is the `Graph` that will be traversed.
@@ -210,6 +218,9 @@ An array of visited vertex ids in the order that they were visited.  Should be c
 #### `traversal.distance`
 The sum of the edge weights of the edges traversed using [`traversal.walk()`](#traversalwalkv).  Should be considered read-only.
 
+#### `traversal.recording`
+A boolean indicating if recording is currently active, per [`traversal.record()`](#traversalrecord) and [`traversal.stop()`](#traversalstop).  Should be considered read-only.
+
 #### `traversal.hop(v)`
 Visits vertex with id `v` without traversing any edges.  A new traversal might begin by calling `traversal.hop()` to visit the first vertex.  Returns `traversal`.
 
@@ -220,10 +231,25 @@ Traverses the edge from the current vertex to vertex with id `v`, visiting `v`. 
 Returns vertex info (see [`graph.getVertex()`](#graphgetvertexv) for the format) of the currently visited vertex, or `null` if no vertex has been visited.
 
 #### `traversal.visits(v)`
-Returns the number of times the traversal has visited the vertex with id `v`,
+Returns the number of times the traversal has visited the vertex with id `v`.
+
+#### `traversal.visitedVertices()`
+Returns an array containing all visited vertex ids.  Differs from [`traversal.sequence`](#traversalsequence) in that it does not indicate order or contain duplicates.
 
 #### `traversal.subgraph()`
 Returns a `Graph` representing the subgraph of visited nodes and traversed edges.
 
+#### `traversal.record()`
+Start recording traversal.  Returns `traversal`.
+
+#### `traversal.stop()`
+Stop recording traversal.  Returns `traversal`.
+
 #### `traversal.play([graph])`
-Returns a new `Traversal` of the in-progress traversal played over `graph`.  It calls [`traversal.hop()`](#traversalhopv) and [`traversal.walk()`](#traversalwalkv) in the order they were called on `traversal`.  If `graph` isn't specified, the traversal will be replayed over [`traversal.graph`](#traversalgraph).
+Returns a new `Traversal` of the recorded traversal steps played over `graph`.  It calls [`traversal.hop()`](#traversalhopv) and [`traversal.walk()`](#traversalwalkv) in the order they were called on `traversal` while recording was active.  If `graph` isn't specified, the traversal steps will be replayed over [`traversal.graph`](#traversalgraph).
+
+#### Events
+The traversal object inherits from `Events.EventEmitter` and emits the following events,
+ - `hop` - occurs when [`traversal.hop()`](#traversalhopv) has completed.  The event handler is passed the new then the previous current vertex ids.
+ - `walk` - occurs when [`traversal.walk()`](#traversalwalkv) has completed. The event handler is passed the new then the previous current vertex ids.
+ - `visit` - occurs when a vertex is visited by hopping or walking to it.  It is emitted directly after `hop` and `walk` events.  The event handler is passed the new current vertex id.

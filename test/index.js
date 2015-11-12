@@ -2,6 +2,7 @@
 
 var Lab = require('lab');
 var Code = require('code');
+var EventEmitter = require('events').EventEmitter;
 
 var Gert = require('..');
 var Graph = Gert.Graph;
@@ -610,7 +611,7 @@ describe('Gert', function () {
             done();
         });
 
-        it('getVertices() returns all vertices.', function (done) {
+        it('getVertices(null, [onlyIds]) returns all vertices.', function (done) {
 
             var data = {
                 b: {},
@@ -633,6 +634,7 @@ describe('Gert', function () {
             });
 
             var vertices = graph.getVertices();
+            var vertexIds = graph.getVertices(null, true);
 
             expect(vertices).to.deep.equal({
                 a: {
@@ -664,10 +666,12 @@ describe('Gert', function () {
                 }
             });
 
+            expect(vertexIds).to.only.include(['a', 'b', 'c']);
+
             done();
         });
 
-        it('getVertices(array) returns specified vertices.', function (done) {
+        it('getVertices(array, [onlyIds]) returns specified vertices.', function (done) {
 
             var data = {
                 b: {},
@@ -690,6 +694,7 @@ describe('Gert', function () {
             });
 
             var vertices = graph.getVertices(['a', 'c', 'not']);
+            var vertexIds = graph.getVertices(['a', 'c', 'not'], true);
 
             expect(vertices).to.deep.equal({
                 a: {
@@ -712,10 +717,12 @@ describe('Gert', function () {
                 }
             });
 
+            expect(vertexIds).to.only.include(['a', 'c']);
+
             done();
         });
 
-        it('getVertices(label) returns vertices by label.', function (done) {
+        it('getVertices(label, [onlyIds]) returns vertices by label.', function (done) {
 
             var graph = new Graph({
                 vertices: {
@@ -762,16 +769,30 @@ describe('Gert', function () {
             };
 
             var consonants = graph.getVertices('consonant');
+            var consonantIds = graph.getVertices('consonant', true);
+
             var vowels = graph.getVertices('vowel');
+            var vowelIds = graph.getVertices('vowel', true);
+
             var abs = graph.getVertices('ab');
+            var abIds = graph.getVertices('ab', true);
+
             var seas = graph.getVertices('sea');
+            var seaIds = graph.getVertices('sea', true);
+
             var none = graph.getVertices('none');
+            var noneIds = graph.getVertices('none', true);
 
             expect(consonants).to.deep.equal({ b: expected.b, c: expected.c });
+            expect(consonantIds).to.only.include(['b', 'c']);
             expect(vowels).to.deep.equal({ a: expected.a });
+            expect(vowelIds).to.only.include(['a']);
             expect(abs).to.deep.equal({ a: expected.a, b: expected.b });
+            expect(abIds).to.only.include(['a', 'b']);
             expect(seas).to.deep.equal({ c: expected.c });
+            expect(seaIds).to.only.include(['c']);
             expect(none).to.deep.equal({});
+            expect(noneIds).to.deep.equal([]);
 
             done();
         });
@@ -1142,7 +1163,7 @@ describe('Gert', function () {
             done();
         });
 
-        it('getEdges() without arguments returns all edges.', function (done) {
+        it('getEdges(null, [onlyPairs]) returns all edges.', function (done) {
 
             var graph = new Graph({
                 edges: [
@@ -1154,6 +1175,7 @@ describe('Gert', function () {
             });
 
             var edges = graph.getEdges();
+            var edgePairs = graph.getEdges(null, true);
 
             expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: [] },
@@ -1162,10 +1184,17 @@ describe('Gert', function () {
                 { pair: ['b', 'a'], weight: 1, labels: [] }
             ]));
 
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b'],
+                ['b', 'c'],
+                ['b', 'a'],
+                ['c', 'a']
+            ]);
+
             done();
         });
 
-        it('getEdges(array) returns specified edges, ignores non-edges.', function (done) {
+        it('getEdges(array, [onlyPairs]) returns specified edges, ignores non-edges.', function (done) {
 
             var graph = new Graph({
                 edges: [
@@ -1177,16 +1206,22 @@ describe('Gert', function () {
             });
 
             var edges = graph.getEdges([['a', 'b'], ['c', 'a'], ['c', 'b']]);
+            var edgePairs = graph.getEdges([['a', 'b'], ['c', 'a'], ['c', 'b']], true);
 
             expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: [] },
                 { pair: ['c', 'a'], weight: 1, labels: [] }
             ]));
 
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b'],
+                ['c', 'a']
+            ]);
+
             done();
         });
 
-        it('getEdges(label) returns edges by label.', function (done) {
+        it('getEdges(label, [onlyPairs]) returns edges by label.', function (done) {
 
             var graph = new Graph({
                 edges: [
@@ -1198,25 +1233,44 @@ describe('Gert', function () {
             });
 
             var tall = graph.getEdges('tall');
+            var tallPairs = graph.getEdges('tall', true);
+
             var cold = graph.getEdges('cold');
+            var coldPairs = graph.getEdges('cold', true);
+
             var short = graph.getEdges('short');
+            var shortPairs = graph.getEdges('short', true);
+
             var non = graph.getEdges('non');
+            var nonPairs = graph.getEdges('non', true);
 
             expect(edgeFormat(tall)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: ['tall'] },
                 { pair: ['b', 'c'], weight: 1, labels: ['tall', 'cold'] }
             ]));
+            expect(tallPairs).to.deep.equal([
+                ['a', 'b'],
+                ['b', 'c']
+            ]);
 
             expect(edgeFormat(cold)).to.deep.equal(edgeFormat([
                 { pair: ['b', 'c'], weight: 1, labels: ['tall', 'cold'] }
             ]));
+            expect(coldPairs).to.deep.equal([
+                ['b', 'c']
+            ]);
 
             expect(edgeFormat(short)).to.deep.equal(edgeFormat([
                 { pair: ['c', 'a'], weight: 1, labels: ['short'] },
                 { pair: ['b', 'a'], weight: 1, labels: ['short'] }
             ]));
+            expect(shortPairs).to.deep.equal([
+                ['c', 'a'],
+                ['b', 'a']
+            ]);
 
             expect(non).to.deep.equal([]);
+            expect(nonPairs).to.deep.equal([]);
 
             done();
         });
@@ -1232,11 +1286,69 @@ describe('Gert', function () {
             });
 
             var edges = graph.getEdges();
+            var edgePairs = graph.getEdges(null, true);
 
             expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
                 { pair: ['a', 'b'], weight: 1, labels: [] },
                 { pair: ['b', 'c'], weight: 1, labels: [] }
             ]));
+
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b'],
+                ['b', 'c']
+            ]);
+
+            done();
+        });
+
+        it('getEdges() returns unique, existing edges in non-digraphs.', function (done) {
+
+            var graph = new Graph({
+                directed: false,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c']
+                ]
+            });
+
+            var query = [['b', 'a'], ['b', 'a'], ['b', 'd'], ['a', 'b']];
+
+            var edges = graph.getEdges(query);
+            var edgePairs = graph.getEdges(query, true);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['b', 'a'], weight: 1, labels: [] }
+            ]));
+
+            expect(edgePairs).to.deep.equal([
+                ['b', 'a']
+            ]);
+
+            done();
+        });
+
+        it('getEdges() returns unique, existing edges in digraphs.', function (done) {
+
+            var graph = new Graph({
+                directed: true,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c']
+                ]
+            });
+
+            var query = [['a', 'b'], ['b', 'd'], ['a', 'b']];
+
+            var edges = graph.getEdges(query);
+            var edgePairs = graph.getEdges(query, true);
+
+            expect(edgeFormat(edges)).to.deep.equal(edgeFormat([
+                { pair: ['a', 'b'], weight: 1, labels: [] }
+            ]));
+
+            expect(edgePairs).to.deep.equal([
+                ['a', 'b']
+            ]);
 
             done();
         });
@@ -1634,6 +1746,59 @@ describe('Gert', function () {
 
             var vertexList = Object.keys(graph.getVertices());
             expect(vertexList).to.deep.equal(['a', 'b', 'c']);
+
+            done();
+        });
+
+        it('size() returns the size of a non-digraph or digraph.', function (done) {
+
+            var digraph = new Graph({
+                directed: true,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'a'],
+                    ['b', 'c'],
+                    ['b', 'b']
+                ]
+            });
+
+            digraph.addEdge('c', 'a');
+            digraph.addEdge('c', 'b');
+            digraph.removeEdge('a', 'b');
+            digraph.updateEdge('c', 'a', {});
+
+            var nondigraph = new Graph({
+                directed: false,
+                edges: [
+                    ['a', 'b'],
+                    ['b', 'c'],
+                    ['b', 'b']
+                ]
+            });
+
+            nondigraph.removeEdge('a', 'b');
+            nondigraph.removeEdge('b', 'c');
+            nondigraph.addEdge('c', 'a');
+            nondigraph.updateEdge('b', 'b', {});
+
+            expect(digraph.size()).to.equal(5);
+            expect(nondigraph.size()).to.equal(2);
+
+            done();
+        });
+
+        it('order() returns the order of a graph.', function (done) {
+
+            var digraph = new Graph({
+                vertices: ['a', 'd']
+            });
+
+            digraph.addVertex('c');
+            digraph.addVertex('b');
+            digraph.removeVertex('a');
+            digraph.updateVertex('c', { data: [] });
+
+            expect(digraph.order()).to.equal(3);
 
             done();
         });
@@ -2717,11 +2882,30 @@ describe('Gert', function () {
             });
 
             var traversal = graph.traverse('a');
+            var traversalPlayed = traversal.play();
 
             expect(traversal).to.be.instanceof(Traversal);
             expect(traversal.graph).to.equal(graph);
             expect(traversal.currentVertex().id).to.equal('a');
             expect(traversal.distance).to.equal(0);
+
+            expect(traversal.recording).to.equal(false);
+            expect(traversalPlayed.currentVertex()).to.equal(null);
+
+            done();
+        });
+
+        it('traverse(starting, true) creates a recording traversal.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a']
+            });
+
+            var traversal = graph.traverse('a', true);
+            var traversalPlayed = traversal.play();
+
+            expect(traversal.recording).to.equal(true);
+            expect(traversalPlayed.currentVertex().id).to.equal('a');
 
             done();
         });
@@ -2895,6 +3079,7 @@ describe('Gert', function () {
             expect(traversal.currentVertex()).to.equal(null);
             expect(traversal.sequence).to.deep.equal([]);
             expect(traversal.distance).to.equal(0);
+            expect(traversal.recording).to.equal(false);
 
             done();
         });
@@ -3016,6 +3201,31 @@ describe('Gert', function () {
             done();
         });
 
+        it('vistedVertices() returns an array of visited vertex ids.', function (done) {
+
+            var graph = new Graph({
+                vertices: {
+                    a: ['b', 'c'],
+                    b: ['c'],
+                    c: ['a'],
+                    d: []
+                }
+            });
+
+            var traversal = new Traversal(graph);
+
+            traversal.hop('a')
+            .walk('b').hop('a')
+            .walk('c').walk('a')
+            .walk('b').hop('a')
+            .hop('c').walk('a')
+            .walk('c');
+
+            expect(traversal.visitedVertices()).to.only.include(['a', 'b', 'c']);
+
+            done();
+        });
+
         it('subgraph() returns a directed subgraph of visited vertices and walked edges.', function (done) {
 
             var graph = new Graph({
@@ -3098,10 +3308,12 @@ describe('Gert', function () {
 
             var traversal = new Traversal(graph);
 
-            traversal.hop('a').walk('b')
+            traversal.record()
+            .hop('a').walk('b')
             .walk('c').walk('b')
             .walk('c').walk('b')
-            .hop('e');
+            .hop('e')
+            .stop();
 
             var replayed = traversal.play();
 
@@ -3141,10 +3353,12 @@ describe('Gert', function () {
 
             var traversal = new Traversal(graphOne);
 
-            traversal.hop('a').walk('b')
+            traversal.record()
+            .hop('a').walk('b')
             .walk('c').walk('b')
             .walk('c').walk('b')
-            .hop('e');
+            .hop('e')
+            .stop();
 
             var replayed = traversal.play(graphTwo);
 
@@ -3156,6 +3370,77 @@ describe('Gert', function () {
             expect(traversal.currentVertex().id).to.equal(replayed.currentVertex().id);
 
             done();
+        });
+
+        it('record() and stop() manage recording state.', function (done) {
+
+            var graph = new Graph({
+                vertices: ['a', 'b', 'c', 'd', 'e'],
+                edges: [
+                    ['d', 'a']
+                ]
+            });
+
+            var traversal = new Traversal(graph);
+            expect(traversal.recording).to.equal(false);
+
+            traversal.hop('a').record();
+            expect(traversal.recording).to.equal(true);
+
+            traversal.hop('b').hop('e').hop('d').walk('a');
+            traversal.stop();
+            expect(traversal.recording).to.equal(false);
+
+            traversal.hop('d').hop('a').hop('d').walk('a');
+            expect(traversal.sequence).to.deep.equal(['a', 'b', 'e', 'd', 'a', 'd', 'a', 'd', 'a']);
+
+            var replayed = traversal.play();
+            expect(replayed.sequence).to.deep.equal(['b', 'e', 'd', 'a']);
+
+            done();
+        });
+
+        describe('events', function () {
+
+            it('hop, walk, and visit occur at the correct time.', function (done) {
+
+                var graph = new Graph({
+                    vertices: {
+                        a: ['b', 'c'],
+                        b: ['c'],
+                        c: ['a', 'b'],
+                        d: [],
+                        e: []
+                    }
+                });
+
+                var traversal = new Traversal(graph);
+
+                expect(traversal).to.be.instanceof(EventEmitter);
+
+                var actions = [];
+
+                traversal.on('hop', function (u, v) {
+
+                    actions.push('H' + u + (v || 'x'));
+                });
+
+                traversal.on('walk', function (u, v) {
+
+                    actions.push('W' + u + v);
+                });
+
+                traversal.on('visit', function (v) {
+
+                    actions.push('V' + v);
+                });
+
+                traversal.hop('a').walk('b').walk('c').hop('e');
+
+                expect(actions.join(' ')).to.equal('Va Hax Vb Wba Vc Wcb Ve Hec');
+                done();
+            });
+
         });
 
     });
