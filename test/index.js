@@ -2,6 +2,7 @@
 
 var Lab = require('lab');
 var Code = require('code');
+var EventEmitter = require('events').EventEmitter;
 
 var Gert = require('..');
 var Graph = Gert.Graph;
@@ -3397,6 +3398,49 @@ describe('Gert', function () {
             expect(replayed.sequence).to.deep.equal(['b', 'e', 'd', 'a']);
 
             done();
+        });
+
+        describe('events', function () {
+
+            it('hop, walk, and visit occur at the correct time.', function (done) {
+
+                var graph = new Graph({
+                    vertices: {
+                        a: ['b', 'c'],
+                        b: ['c'],
+                        c: ['a', 'b'],
+                        d: [],
+                        e: []
+                    }
+                });
+
+                var traversal = new Traversal(graph);
+
+                expect(traversal).to.be.instanceof(EventEmitter);
+
+                var actions = [];
+
+                traversal.on('hop', function (u, v) {
+
+                    actions.push('H' + u + (v || 'x'));
+                });
+
+                traversal.on('walk', function (u, v) {
+
+                    actions.push('W' + u + v);
+                });
+
+                traversal.on('visit', function (v) {
+
+                    actions.push('V' + v);
+                });
+
+                traversal.hop('a').walk('b').walk('c').hop('e');
+
+                expect(actions.join(' ')).to.equal('Va Hax Vb Wba Vc Wcb Ve Hec');
+                done();
+            });
+
         });
 
     });

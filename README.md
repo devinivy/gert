@@ -243,3 +243,9 @@ Stop recording traversal.
 
 #### `traversal.play([graph])`
 Returns a new `Traversal` of the recorded traversal steps played over `graph`.  It calls [`traversal.hop()`](#traversalhopv) and [`traversal.walk()`](#traversalwalkv) in the order they were called on `traversal` while recording was active.  If `graph` isn't specified, the traversal steps will be replayed over [`traversal.graph`](#traversalgraph).
+
+#### Events
+The traversal object inherits from `Events.EventEmitter` and emits the following events,
+ - `hop` - occurs when [`traversal.hop()`](#traversalhopv) has completed.  The event handler is passed the new then the previous current vertex ids.
+ - `walk` - occurs when [`traversal.walk()`](#traversalwalkv) has completed. The event handler is passed the new then the previous current vertex ids.
+ - `visit` - occurs when a vertex is visited by hopping or walking to it.  It is emitted directly after `hop` and `walk` events.  The event handler is passed the new current vertex id.
