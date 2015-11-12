@@ -233,6 +233,9 @@ Returns vertex info (see [`graph.getVertex()`](#graphgetvertexv) for the format)
 #### `traversal.visits(v)`
 Returns the number of times the traversal has visited the vertex with id `v`.
 
+#### `traversal.visitedVertices()`
+Returns an array containing all visited vertex ids.  Differs from [traversal.sequence](#traversalsequence) in that it does not indicate order or contain duplicates.
+
 #### `traversal.subgraph()`
 Returns a `Graph` representing the subgraph of visited nodes and traversed edges.
 
